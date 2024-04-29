@@ -11,6 +11,7 @@ function(add_executable_learnopengl2 name)
     add_executable(${name} src/${name}.cpp)
     target_link_libraries(${name} PRIVATE glfw)
     target_link_libraries(${name} PRIVATE glad::glad)
+    target_include_directories(${name} PRIVATE src/include)
 endfunction()
 
 set(LEARNOPENGL2_APPS
@@ -20,6 +21,7 @@ set(LEARNOPENGL2_APPS
     1.2.hello_triangle_ex1
     1.2.hello_triangle_ex2
     1.2.hello_triangle_ex3
+    1.3.shaders_from_file
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
