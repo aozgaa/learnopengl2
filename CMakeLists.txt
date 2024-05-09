@@ -22,6 +22,12 @@ set(LEARNOPENGL2_APPS
     1.2.hello_triangle_ex2
     1.2.hello_triangle_ex3
     1.3.shaders_from_file
+    1.3.shaders_vertex_color
+    1.3.shaders_uniform
+    1.3.shaders_color_attr
+    1.3.shaders_ex1
+    1.3.shaders_ex2
+    # 1.3.shaders_ex3 # same as 1.3.shaders_vertex_color
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
