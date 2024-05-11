@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include "file.h"
+#include "image.h"
 
 #include <iostream>
 #include <string>
@@ -15,15 +16,19 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-const char *vertexShaderPath   = "src/1.3.shaders_color_attr.vert";
-const char *fragmentShaderPath = "src/1.3.shaders_color_attr.frag";
+const char *vertexShaderPath   = "src/1.4.textures_triangle.vert";
+const char *fragmentShaderPath = "src/1.4.textures_triangle.frag";
 
 float vertices[] = {
-  // pos              color
-  -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // v0
-  0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // v1
-  0.0f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f, // v2
+  // pos              color             texture coords
+  -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // v0
+  0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // v1
+  0.0f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f, 0.5f, 1.0f, // v2
 };
+
+unsigned int indices[] = { 0, 1, 2 };
+
+float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
 
 int shaderPrograms[1] = {};
 
@@ -57,22 +62,50 @@ int main() {
   reloadShaders(shaderPrograms[0], vertexShaderPath, fragmentShaderPath);
 
   unsigned int VBO = 0;
-  unsigned int VAO = 0;
   glGenBuffers(1, &VBO);
-  glGenVertexArrays(1, &VAO);
-
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+  unsigned int VAO = 0;
+  glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0); // position
+
+  unsigned int EBO = 0;
+  glGenBuffers(1, &EBO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+               GL_STATIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+                        (void *)0); // position
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                         (void *)(3 * sizeof(float))); // colors
   glEnableVertexAttribArray(1);
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+                        (void *)(6 * sizeof(float))); // texture coords
+  glEnableVertexAttribArray(2);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0); // unbind
   glBindVertexArray(0);             // unbind
+
+  auto image = stb::Image("assets/wall.jpg");
+
+  unsigned int texture = 0;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB,
+               GL_UNSIGNED_BYTE, image.data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  auto textureLoc = glGetUniformLocation(shaderPrograms[0], "uniformTexture");
+  glUseProgram(shaderPrograms[0]);
+  glUniform1i(textureLoc, 0);
 
   size_t iters = 0;
   while (!glfwWindowShouldClose(window)) {
@@ -87,14 +120,19 @@ int main() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
     glUseProgram(shaderPrograms[0]);
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
     glfwPollEvents();
     glfwSwapBuffers(window);
   }
 
+  glDeleteTextures(1, &texture);
+  glDeleteBuffers(1, &EBO);
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   glDeleteProgram(shaderPrograms[0]);
