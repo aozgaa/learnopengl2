@@ -8,6 +8,9 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(Stb REQUIRED)
 
+configure_file(configuration/root_directory.h.in configuration/root_directory.h)
+include_directories(${CMAKE_BINARY_DIR}/configuration)
+
 function(add_executable_learnopengl2 name)
     add_executable(${name} src/${name}.cpp)
     target_link_libraries(${name} PRIVATE glfw)
