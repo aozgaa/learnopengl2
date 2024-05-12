@@ -2,13 +2,10 @@
 
 #include <GLFW/glfw3.h>
 
-#include "file.h"
+#include "shader_program.h"
 
 #include <iostream>
 #include <string>
-
-void reloadShaders(int &shaderProgram, const char *vertPath,
-                   const char *fragPath);
 
 void processInput(GLFWwindow *window);
 
@@ -24,7 +21,7 @@ float vertices[] = {
   0.0f,  0.5f,  0.0f, // v2
 };
 
-int shaderPrograms[1] = {};
+int shaderProgram = {};
 
 int main() {
   glfwInit();
@@ -53,7 +50,7 @@ int main() {
     exit(1);
   }
 
-  reloadShaders(shaderPrograms[0], vertexShaderPath, fragmentShaderPath);
+  reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
 
   unsigned int VBO = 0;
   unsigned int VAO = 0;
@@ -74,7 +71,7 @@ int main() {
   while (!glfwWindowShouldClose(window)) {
     if ((iters++ % (1 << 6)) == 0) {
       if (fileChanged(vertexShaderPath) || fileChanged(fragmentShaderPath)) {
-        reloadShaders(shaderPrograms[0], vertexShaderPath, fragmentShaderPath);
+        reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
       }
     }
 
@@ -83,8 +80,8 @@ int main() {
     float timeValue  = glfwGetTime();
     float greenValue = (sin(timeValue * 20.0f) / 2.0f) + 0.5f;
     int   uniformColorLocation =
-        glGetUniformLocation(shaderPrograms[0], "uniformColor");
-    glUseProgram(shaderPrograms[0]);
+        glGetUniformLocation(shaderProgram, "uniformColor");
+    glUseProgram(shaderProgram);
     glUniform4f(uniformColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -99,55 +96,10 @@ int main() {
 
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
-  glDeleteProgram(shaderPrograms[0]);
+  glDeleteProgram(shaderProgram);
 
   glfwTerminate();
   return 0;
-}
-
-void reloadShaders(int &shaderProgram, const char *vertPath,
-                   const char *fragPath) {
-  glDeleteProgram(shaderProgram); // 0 silently ignored
-
-  int  success;
-  char infoLog[512];
-
-  unsigned int vertexShader       = glCreateShader(GL_VERTEX_SHADER);
-  std::string  triangleVertSource = readFile(vertPath);
-  const char  *c_str              = triangleVertSource.c_str();
-  glShaderSource(vertexShader, 1, &c_str, nullptr);
-  glCompileShader(vertexShader);
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    std::cerr << "ERROR:SHADER::VERTEX::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
-
-  unsigned int fragmentShader     = glCreateShader(GL_FRAGMENT_SHADER);
-  std::string  triangleFragSource = readFile(fragPath);
-  c_str                           = triangleFragSource.c_str();
-  glShaderSource(fragmentShader, 1, &c_str, NULL);
-  glCompileShader(fragmentShader);
-  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
-
-  shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-    std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
 }
 
 void processInput(GLFWwindow *window) {
@@ -155,6 +107,6 @@ void processInput(GLFWwindow *window) {
     glfwSetWindowShouldClose(window, true);
   }
   if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-    reloadShaders(shaderPrograms[0], vertexShaderPath, fragmentShaderPath);
+    reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
   }
 }

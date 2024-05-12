@@ -20,8 +20,10 @@ struct Image {
       throw new std::runtime_error("could not load image");
     }
   }
-  Image(Image &other)  = delete;
-  Image(Image &&other) = delete;
+  Image(Image &other)             = delete;
+  Image(Image &&other)            = delete;
+  Image &operator=(Image &other)  = delete;
+  Image &operator=(Image &&other) = delete;
   ~Image() { stbi_image_free(data); }
 
   const auto get() const { return data; }

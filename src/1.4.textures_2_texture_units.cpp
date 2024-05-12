@@ -2,14 +2,11 @@
 
 #include <GLFW/glfw3.h>
 
-#include "file.h"
 #include "image.h"
+#include "shader_program.h"
 
 #include <iostream>
 #include <string>
-
-void reloadShaders(int &shaderProgram, const char *vertPath,
-                   const char *fragPath);
 
 void processInput(GLFWwindow *window);
 
@@ -21,7 +18,6 @@ const char *fragmentShaderPath = "src/1.4.textures_2_texture_units.frag";
 
 float vertices[] = {
   // pos              color             texture coords
-
   -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // lower left
   0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // lower right
   0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // upper right
@@ -33,9 +29,9 @@ unsigned int indices[] = {
   0, 2, 3  // triangle1
 };
 
-float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 
-int shaderPrograms[1] = {};
+int shaderProgram = 0;
 
 int main() {
   glfwInit();
@@ -64,7 +60,7 @@ int main() {
     exit(1);
   }
 
-  reloadShaders(shaderPrograms[0], vertexShaderPath, fragmentShaderPath);
+  reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
 
   unsigned int VBO = 0;
   glGenBuffers(1, &VBO);
@@ -94,109 +90,35 @@ int main() {
   glBindBuffer(GL_ARRAY_BUFFER, 0); // unbind
   glBindVertexArray(0);             // unbind
 
-  // load and create a texture
-  // -------------------------
-  unsigned int texture1, texture2;
-  // texture 1
-  // ---------
-  glGenTextures(1, &texture1);
-  glBindTexture(GL_TEXTURE_2D, texture1);
-  // set the texture wrapping parameters
-  glTexParameteri(
-      GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-      GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  // set texture filtering parameters
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  // load image, create texture and generate mipmaps
-  int width, height, nrChannels;
-  stbi_set_flip_vertically_on_load(
-      true); // tell stb_image.h to flip loaded texture's on the y-axis.
-  // The FileSystem::getPath(...) is part of the GitHub repository so we can
-  // find files on any IDE/platform; replace it with your own image path.
-  unsigned char *data =
-      stbi_load("assets/wall.jpg", &width, &height, &nrChannels, 0);
-  if (data) {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
-                 GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-  } else {
-    std::cout << "Failed to load texture" << std::endl;
-  }
-  stbi_image_free(data);
-  // texture 2
-  // ---------
-  glGenTextures(1, &texture2);
-  glBindTexture(GL_TEXTURE_2D, texture2);
-  // set the texture wrapping parameters
-  glTexParameteri(
-      GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-      GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  // set texture filtering parameters
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  // load image, create texture and generate mipmaps
-  data = stbi_load("assets/awesomeface.png", &width, &height, &nrChannels, 0);
-  if (data) {
-    // note that the awesomeface.png has transparency and thus an alpha channel,
-    // so make sure to tell OpenGL the data type is of GL_RGBA
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
-                 GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-  } else {
-    std::cout << "Failed to load texture" << std::endl;
-  }
-  stbi_image_free(data);
+  unsigned int wallTexture = 0;
+  glGenTextures(1, &wallTexture);
+  glBindTexture(GL_TEXTURE_2D, wallTexture);
+  auto wallImage = stb::Image("assets/wall.jpg");
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, wallImage.width, wallImage.height, 0,
+               GL_RGB, GL_UNSIGNED_BYTE, wallImage.data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+  auto wallLoc = glGetUniformLocation(shaderProgram, "wallSampler");
 
-  // float borderColor[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+  unsigned int smileyTexture = 0;
+  glGenTextures(1, &smileyTexture);
+  glBindTexture(GL_TEXTURE_2D, smileyTexture);
+  auto smileyImage = stb::Image("assets/awesomeface.png");
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, smileyImage.width, smileyImage.height,
+               0, GL_RGBA, GL_UNSIGNED_BYTE, smileyImage.data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+  auto smileyLoc = glGetUniformLocation(shaderProgram, "smileySampler");
 
-  // unsigned int texture1 = 0;
-  // glGenTextures(1, &texture1);
-  // glBindTexture(GL_TEXTURE_2D, texture1);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-  // glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-  //                 GL_LINEAR_MIPMAP_LINEAR);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  // auto wall_image = stb::Image("assets/wall.jpg");
-  // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, wall_image.width, wall_image.height,
-  // 0,
-  //              GL_RGB, GL_UNSIGNED_BYTE, wall_image.data);
-  // glGenerateMipmap(GL_TEXTURE_2D);
-  // // glUseProgram(shaderPrograms[0]);
-  // // auto wallLoc = glGetUniformLocation(shaderPrograms[0], "uniformwall");
-  // // glUniform1i(wallLoc, 0);
+  glUseProgram(shaderProgram);
+  glUniform1i(wallLoc, 3);
+  glUniform1i(smileyLoc, 5);
 
-  // unsigned int texture2 = 0;
-  // glGenTextures(1, &texture2);
-  // glBindTexture(GL_TEXTURE_2D, texture2);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  // auto smiley_image = stb::Image("assets/awesomeface.png");
-  // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, smiley_image.width,
-  //              smiley_image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-  //              smiley_image.data);
-  // glGenerateMipmap(GL_TEXTURE_2D);
-  // // auto smileyLoc = glGetUniformLocation(shaderPrograms[0],
-  // "uniformsmiley");
-  // // glUseProgram(shaderPrograms[0]);
-  // // glUniform1i(smileyLoc, 1);
+  glBindTexture(GL_TEXTURE_2D, 0); // unbind
 
-  glUseProgram(shaderPrograms[0]);
-  glUniform1i(glGetUniformLocation(shaderPrograms[0], "texture1"), 0);
-  glUniform1i(glGetUniformLocation(shaderPrograms[0], "texture2"), 1);
-
-  size_t iters = 0;
+  size_t iter = 0;
   while (!glfwWindowShouldClose(window)) {
-    if ((iters++ % (1 << 6)) == 0) {
-      if (fileChanged(vertexShaderPath) || fileChanged(fragmentShaderPath)) {
-        reloadShaders(shaderPrograms[0], vertexShaderPath, fragmentShaderPath);
-      }
+    iter++;
+    if (fileChanged(vertexShaderPath) || fileChanged(fragmentShaderPath)) {
+      reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
     }
 
     processInput(window);
@@ -204,73 +126,46 @@ int main() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // set the default texture unit -- should not matter
+    // verifies that smiley+wall are initialized correctly
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture2);
+    unsigned int tx0_handle = 0;
+    switch ((iter / 64) % 3) {
+    case 0:
+      tx0_handle = 0;
+      break;
+    case 1:
+      tx0_handle = wallTexture;
+      break;
+    case 2:
+      tx0_handle = smileyTexture;
+      break;
+    }
+    glBindTexture(GL_TEXTURE_2D, tx0_handle);
 
-    glUseProgram(shaderPrograms[0]);
+    // set the texture units bound to samplers -- does not work!
+    glActiveTexture(GL_TEXTURE0 + 3);
+    glBindTexture(GL_TEXTURE_2D, wallTexture);
+    glActiveTexture(GL_TEXTURE0 + 5);
+    glBindTexture(GL_TEXTURE_2D, smileyTexture);
+
+    glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-    glfwPollEvents();
     glfwSwapBuffers(window);
+    glfwPollEvents();
   }
 
-  glDeleteTextures(1, &texture2);
-  glDeleteTextures(1, &texture1);
+  glDeleteTextures(1, &smileyTexture);
+  glDeleteTextures(1, &wallTexture);
   glDeleteBuffers(1, &EBO);
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
-  glDeleteProgram(shaderPrograms[0]);
+  glDeleteProgram(shaderProgram);
 
   glfwTerminate();
   return 0;
-}
-
-void reloadShaders(int &shaderProgram, const char *vertPath,
-                   const char *fragPath) {
-  glDeleteProgram(shaderProgram); // 0 silently ignored
-
-  int  success;
-  char infoLog[512];
-
-  unsigned int vertexShader       = glCreateShader(GL_VERTEX_SHADER);
-  std::string  triangleVertSource = readFile(vertPath);
-  const char  *c_str              = triangleVertSource.c_str();
-  glShaderSource(vertexShader, 1, &c_str, nullptr);
-  glCompileShader(vertexShader);
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    std::cerr << "ERROR:SHADER::VERTEX::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
-
-  unsigned int fragmentShader     = glCreateShader(GL_FRAGMENT_SHADER);
-  std::string  triangleFragSource = readFile(fragPath);
-  c_str                           = triangleFragSource.c_str();
-  glShaderSource(fragmentShader, 1, &c_str, NULL);
-  glCompileShader(fragmentShader);
-  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
-
-  shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-    std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
 }
 
 void processInput(GLFWwindow *window) {
@@ -278,6 +173,6 @@ void processInput(GLFWwindow *window) {
     glfwSetWindowShouldClose(window, true);
   }
   if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-    reloadShaders(shaderPrograms[0], vertexShaderPath, fragmentShaderPath);
+    reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
   }
 }
