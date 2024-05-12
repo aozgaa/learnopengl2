@@ -2,13 +2,10 @@
 
 #include <GLFW/glfw3.h>
 
-#include "file.h"
+#include "shader_program.h"
 
 #include <iostream>
 #include <string>
-
-void reloadShaders(int &shaderProgram, const char *vertPath,
-                   const char *fragPath);
 
 void processInput(GLFWwindow *window);
 
@@ -24,7 +21,7 @@ float vertices[] = {
   0.0f,  0.5f,  0.0f, // v2
 };
 
-int shaderPrograms[1] = {};
+int shaderProgram = {};
 
 int main() {
   glfwInit();
@@ -53,7 +50,7 @@ int main() {
     exit(1);
   }
 
-  reloadShaders(shaderPrograms[0], vertexShaderPath, fragmentShaderPath);
+  reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
 
   unsigned int VBO = 0;
   unsigned int VAO = 0;
@@ -74,15 +71,14 @@ int main() {
   while (!glfwWindowShouldClose(window)) {
     if ((iters++ % (1 << 6)) == 0) {
       if (fileChanged(vertexShaderPath) || fileChanged(fragmentShaderPath)) {
-        reloadShaders(shaderPrograms[0], vertexShaderPath, fragmentShaderPath);
+        reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
       }
     }
 
-    float timeValue = glfwGetTime();
-    float xShift    = sin(timeValue * 7.0f) / 2.0f;
-    int   uniformXShiftLocation =
-        glGetUniformLocation(shaderPrograms[0], "xShift");
-    glUseProgram(shaderPrograms[0]);
+    float timeValue             = glfwGetTime();
+    float xShift                = sin(timeValue * 7.0f) / 2.0f;
+    int   uniformXShiftLocation = glGetUniformLocation(shaderProgram, "xShift");
+    glUseProgram(shaderProgram);
     glUniform1f(uniformXShiftLocation, xShift);
 
     processInput(window);
@@ -90,7 +86,7 @@ int main() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(shaderPrograms[0]);
+    glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -100,55 +96,10 @@ int main() {
 
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
-  glDeleteProgram(shaderPrograms[0]);
+  glDeleteProgram(shaderProgram);
 
   glfwTerminate();
   return 0;
-}
-
-void reloadShaders(int &shaderProgram, const char *vertPath,
-                   const char *fragPath) {
-  glDeleteProgram(shaderProgram); // 0 silently ignored
-
-  int  success;
-  char infoLog[512];
-
-  unsigned int vertexShader       = glCreateShader(GL_VERTEX_SHADER);
-  std::string  triangleVertSource = readFile(vertPath);
-  const char  *c_str              = triangleVertSource.c_str();
-  glShaderSource(vertexShader, 1, &c_str, nullptr);
-  glCompileShader(vertexShader);
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    std::cerr << "ERROR:SHADER::VERTEX::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
-
-  unsigned int fragmentShader     = glCreateShader(GL_FRAGMENT_SHADER);
-  std::string  triangleFragSource = readFile(fragPath);
-  c_str                           = triangleFragSource.c_str();
-  glShaderSource(fragmentShader, 1, &c_str, NULL);
-  glCompileShader(fragmentShader);
-  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
-
-  shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-    std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
 }
 
 void processInput(GLFWwindow *window) {
@@ -156,6 +107,6 @@ void processInput(GLFWwindow *window) {
     glfwSetWindowShouldClose(window, true);
   }
   if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-    reloadShaders(shaderPrograms[0], vertexShaderPath, fragmentShaderPath);
+    reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
   }
 }

@@ -2,14 +2,11 @@
 
 #include <GLFW/glfw3.h>
 
-#include "file.h"
 #include "image.h"
+#include "shader_program.h"
 
 #include <iostream>
 #include <string>
-
-void reloadShaders(int &shaderProgram, const char *vertPath,
-                   const char *fragPath);
 
 void processInput(GLFWwindow *window);
 
@@ -35,7 +32,7 @@ unsigned int indices[] = {
 
 float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
 
-int shaderPrograms[1] = {};
+int shaderProgram = {};
 
 int main() {
   glfwInit();
@@ -64,7 +61,7 @@ int main() {
     exit(1);
   }
 
-  reloadShaders(shaderPrograms[0], vertexShaderPath, fragmentShaderPath);
+  reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
 
   unsigned int VBO = 0;
   glGenBuffers(1, &VBO);
@@ -110,15 +107,15 @@ int main() {
                GL_UNSIGNED_BYTE, image.data);
   glGenerateMipmap(GL_TEXTURE_2D);
 
-  auto textureLoc = glGetUniformLocation(shaderPrograms[0], "uniformTexture");
-  glUseProgram(shaderPrograms[0]);
+  auto textureLoc = glGetUniformLocation(shaderProgram, "uniformTexture");
+  glUseProgram(shaderProgram);
   glUniform1i(textureLoc, 0);
 
   size_t iters = 0;
   while (!glfwWindowShouldClose(window)) {
     if ((iters++ % (1 << 6)) == 0) {
       if (fileChanged(vertexShaderPath) || fileChanged(fragmentShaderPath)) {
-        reloadShaders(shaderPrograms[0], vertexShaderPath, fragmentShaderPath);
+        reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
       }
     }
 
@@ -130,7 +127,7 @@ int main() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    glUseProgram(shaderPrograms[0]);
+    glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -142,55 +139,10 @@ int main() {
   glDeleteBuffers(1, &EBO);
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
-  glDeleteProgram(shaderPrograms[0]);
+  glDeleteProgram(shaderProgram);
 
   glfwTerminate();
   return 0;
-}
-
-void reloadShaders(int &shaderProgram, const char *vertPath,
-                   const char *fragPath) {
-  glDeleteProgram(shaderProgram); // 0 silently ignored
-
-  int  success;
-  char infoLog[512];
-
-  unsigned int vertexShader       = glCreateShader(GL_VERTEX_SHADER);
-  std::string  triangleVertSource = readFile(vertPath);
-  const char  *c_str              = triangleVertSource.c_str();
-  glShaderSource(vertexShader, 1, &c_str, nullptr);
-  glCompileShader(vertexShader);
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    std::cerr << "ERROR:SHADER::VERTEX::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
-
-  unsigned int fragmentShader     = glCreateShader(GL_FRAGMENT_SHADER);
-  std::string  triangleFragSource = readFile(fragPath);
-  c_str                           = triangleFragSource.c_str();
-  glShaderSource(fragmentShader, 1, &c_str, NULL);
-  glCompileShader(fragmentShader);
-  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-  if (!success) {
-    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
-
-  shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-    std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
-  }
 }
 
 void processInput(GLFWwindow *window) {
@@ -198,6 +150,6 @@ void processInput(GLFWwindow *window) {
     glfwSetWindowShouldClose(window, true);
   }
   if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-    reloadShaders(shaderPrograms[0], vertexShaderPath, fragmentShaderPath);
+    reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
   }
 }
