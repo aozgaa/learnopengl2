@@ -31,7 +31,12 @@ unsigned int indices[] = {
 
 float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 
-int shaderProgram = 0;
+#define WALL_TEXTURE_UNIT 3
+#define SMILEY_TEXTURE_UNIT 5
+
+int   shaderProgram = 0;
+GLint wallLoc       = 0;
+GLint smileyLoc     = 0;
 
 int main() {
   glfwInit();
@@ -97,7 +102,7 @@ int main() {
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, wallImage.width, wallImage.height, 0,
                GL_RGB, GL_UNSIGNED_BYTE, wallImage.data);
   glGenerateMipmap(GL_TEXTURE_2D);
-  auto wallLoc = glGetUniformLocation(shaderProgram, "wallSampler");
+  wallLoc = glGetUniformLocation(shaderProgram, "wallSampler");
 
   unsigned int smileyTexture = 0;
   glGenTextures(1, &smileyTexture);
@@ -106,42 +111,26 @@ int main() {
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, smileyImage.width, smileyImage.height,
                0, GL_RGBA, GL_UNSIGNED_BYTE, smileyImage.data);
   glGenerateMipmap(GL_TEXTURE_2D);
-  auto smileyLoc = glGetUniformLocation(shaderProgram, "smileySampler");
+  smileyLoc = glGetUniformLocation(shaderProgram, "smileySampler");
 
   glUseProgram(shaderProgram);
-  glUniform1i(wallLoc, 3);
-  glUniform1i(smileyLoc, 5);
+  glUniform1i(wallLoc, WALL_TEXTURE_UNIT);
+  glUniform1i(smileyLoc, SMILEY_TEXTURE_UNIT);
 
   glBindTexture(GL_TEXTURE_2D, 0); // unbind
 
-  size_t iter = 0;
   while (!glfwWindowShouldClose(window)) {
-    iter++;
     if (fileChanged(vertexShaderPath) || fileChanged(fragmentShaderPath)) {
       reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
+      glUseProgram(shaderProgram);
+      glUniform1i(wallLoc, WALL_TEXTURE_UNIT);
+      glUniform1i(smileyLoc, SMILEY_TEXTURE_UNIT);
     }
 
     processInput(window);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-
-    // set the default texture unit -- should not matter
-    // verifies that smiley+wall are initialized correctly
-    glActiveTexture(GL_TEXTURE0);
-    unsigned int tx0_handle = 0;
-    switch ((iter / 64) % 3) {
-    case 0:
-      tx0_handle = 0;
-      break;
-    case 1:
-      tx0_handle = wallTexture;
-      break;
-    case 2:
-      tx0_handle = smileyTexture;
-      break;
-    }
-    glBindTexture(GL_TEXTURE_2D, tx0_handle);
 
     // set the texture units bound to samplers -- does not work!
     glActiveTexture(GL_TEXTURE0 + 3);
@@ -174,5 +163,7 @@ void processInput(GLFWwindow *window) {
   }
   if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
     reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
+    glUniform1i(wallLoc, WALL_TEXTURE_UNIT);
+    glUniform1i(smileyLoc, SMILEY_TEXTURE_UNIT);
   }
 }
