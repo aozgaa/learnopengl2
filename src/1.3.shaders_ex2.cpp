@@ -4,6 +4,7 @@
 
 #include "shader_program.h"
 
+#include <cmath>
 #include <iostream>
 #include <string>
 

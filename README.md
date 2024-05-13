@@ -9,7 +9,8 @@ This repository differ's from the website author's [LearnOpenGl repository](http
 * simpler cmake configuration
 * vcpkg compatibility
 * flatter directory structure
-* auto-formatting with `.clang-format`
+* auto-formatting as described in `.clang-format`
+* linting as described in  `.clang-tidy`
 
 # Building
 
@@ -19,7 +20,7 @@ cmake -S . -B build --preset vcpkg-win -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 cmake --build build
 ```
 
-As a convenience, a preset called `vcpkg-win` is provided which obtains and builds dependencies on windows using vcpkg.
+As a convenience, a preset called `vcpkg` is provided which obtains and builds dependencies on windows using vcpkg.
 In order to use it, `VCPKG_ROOT` needs to be set.
 One way to do this is to create a `CMakeUserPresets.json` file with contents analogous to this:
 ```
@@ -28,7 +29,7 @@ One way to do this is to create a `CMakeUserPresets.json` file with contents ana
     "configurePresets": [
         {
             "name": "default",
-            "inherits": "vcpkg-win",
+            "inherits": "vcpkg",
             "generator": "Ninja",
             "environment": {
                 "VCPKG_ROOT": "C:/Users/$env{UserName}/r/vcpkg"
@@ -37,10 +38,17 @@ One way to do this is to create a `CMakeUserPresets.json` file with contents ana
     ]
 }
 ```
+Then you can run
+```
+cmake -S . -B build --preset default -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build build
+```
 
-The build has been tested on Windows 10 with
+The build has been tested on the following platforms:
+* Windows 10 with
 [Build Tools for Visual Studio 2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022)
 and the powershell developer command prompt.
+* Ubuntu 23.10 with clang/ninja
 Alternate presets could be created to support other platforms, shells, and dependency-management methods.
 
 # Running
