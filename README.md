@@ -4,7 +4,7 @@ This repository implements the [Learn OpenGL Tutorials](https://learnopengl.com/
 
 The main motivation for this repo is to learn by doing.
 
-This repository differ's from the website author's [LearnOpenGl repsoitory](https://github.com/JoeyDeVries/LearnOpenGL) in the following ways:
+This repository differ's from the website author's [LearnOpenGl repository](https://github.com/JoeyDeVries/LearnOpenGL) in the following ways:
 * use of some modern c++ idioms (eg: lambda's)
 * simpler cmake configuration
 * vcpkg compatibility
