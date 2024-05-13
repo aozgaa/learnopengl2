@@ -52,3 +52,11 @@ build/1.1.hello_window.exe
 build/1.2.hello_triangle_ebo.exe
 ...
 ```
+
+# Linting
+
+Let the compiler worry about formatting and style. After building:
+```
+clang-format -i src/include/*.h ./src/*.cpp
+clang-tidy -p build -fix-errors src/include/*.h ./src/*.cpp
+```

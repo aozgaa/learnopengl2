@@ -101,15 +101,15 @@ int main() {
               << infoLog << std::endl;
   }
 
-  unsigned int VBO[2] = {}, VAO[2] = {};
-  glGenBuffers(2, VBO);
-  glGenVertexArrays(2, VAO);
+  unsigned int vbo[2] = {}, vao[2] = {};
+  glGenBuffers(2, vbo);
+  glGenVertexArrays(2, vao);
   for (int i = 0; i < 2; ++i) {
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[i]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) / 2, &vertices[i * 3],
                  GL_STATIC_DRAW);
 
-    glBindVertexArray(VAO[i]);
+    glBindVertexArray(vao[i]);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
                           (void *)0);
@@ -127,17 +127,17 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaderProgram);
-    glBindVertexArray(VAO[0]);
+    glBindVertexArray(vao[0]);
     glDrawArrays(GL_TRIANGLES, 0, 3);
-    glBindVertexArray(VAO[1]);
+    glBindVertexArray(vao[1]);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glfwPollEvents();
     glfwSwapBuffers(window);
   }
 
-  glDeleteVertexArrays(2, VAO);
-  glDeleteBuffers(2, VBO);
+  glDeleteVertexArrays(2, vao);
+  glDeleteBuffers(2, vbo);
 
   glDeleteProgram(shaderProgram);
 

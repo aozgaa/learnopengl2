@@ -58,18 +58,18 @@ int main() {
 
   reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
 
-  unsigned int VBO = 0;
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  unsigned int vbo = 0;
+  glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  unsigned int VAO = 0;
-  glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
+  unsigned int vao = 0;
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
 
-  unsigned int EBO = 0;
-  glGenBuffers(1, &EBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  unsigned int ebo = 0;
+  glGenBuffers(1, &ebo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
                GL_STATIC_DRAW);
 
@@ -121,7 +121,7 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, texture);
 
     glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
+    glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
     glfwPollEvents();
@@ -129,9 +129,9 @@ int main() {
   }
 
   glDeleteTextures(1, &texture);
-  glDeleteBuffers(1, &EBO);
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
+  glDeleteBuffers(1, &ebo);
+  glDeleteVertexArrays(1, &vao);
+  glDeleteBuffers(1, &vbo);
   glDeleteProgram(shaderProgram);
 
   glfwTerminate();

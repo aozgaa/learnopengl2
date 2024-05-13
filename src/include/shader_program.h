@@ -40,15 +40,15 @@ void reloadShaders(int &shaderProgram, const char *vertPath,
 
   unsigned int vertexShader       = glCreateShader(GL_VERTEX_SHADER);
   std::string  triangleVertSource = readFile(vertPath);
-  const char  *c_str              = triangleVertSource.c_str();
-  glShaderSource(vertexShader, 1, &c_str, nullptr);
+  const char  *cStr               = triangleVertSource.c_str();
+  glShaderSource(vertexShader, 1, &cStr, nullptr);
   glCompileShader(vertexShader);
   checkShaderError(vertexShader, "VERTEX");
 
   unsigned int fragmentShader     = glCreateShader(GL_FRAGMENT_SHADER);
   std::string  triangleFragSource = readFile(fragPath);
-  c_str                           = triangleFragSource.c_str();
-  glShaderSource(fragmentShader, 1, &c_str, NULL);
+  cStr                            = triangleFragSource.c_str();
+  glShaderSource(fragmentShader, 1, &cStr, NULL);
   glCompileShader(fragmentShader);
   checkShaderError(fragmentShader, "FRAGMENT");
 

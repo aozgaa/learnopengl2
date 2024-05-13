@@ -53,15 +53,15 @@ int main() {
 
   reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
 
-  unsigned int VBO = 0;
-  unsigned int VAO = 0;
-  glGenBuffers(1, &VBO);
-  glGenVertexArrays(1, &VAO);
+  unsigned int vbo = 0;
+  unsigned int vao = 0;
+  glGenBuffers(1, &vbo);
+  glGenVertexArrays(1, &vao);
 
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  glBindVertexArray(VAO);
+  glBindVertexArray(vao);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
@@ -85,15 +85,15 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
+    glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glfwPollEvents();
     glfwSwapBuffers(window);
   }
 
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
+  glDeleteVertexArrays(1, &vao);
+  glDeleteBuffers(1, &vbo);
   glDeleteProgram(shaderProgram);
 
   glfwTerminate();
