@@ -8,12 +8,29 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(Stb REQUIRED)
 
+add_custom_target(lint-all)
+
+function(add_lint_target filename)
+    get_filename_component(basename ${filename} NAME_WLE)
+    add_custom_target(lint-${basename}
+        COMMAND clang-format -i ${filename}
+        COMMAND clang-tidy -p ${CMAKE_BINARY_DIR} ${filename}
+    )
+    add_dependencies(lint-all lint-${basename})
+endfunction()
+
+add_lint_target(${CMAKE_CURRENT_SOURCE_DIR}/src/include/file.h)
+add_lint_target(${CMAKE_CURRENT_SOURCE_DIR}/src/include/image.h)
+add_lint_target(${CMAKE_CURRENT_SOURCE_DIR}/src/include/shader_program.h)
+
 function(add_executable_learnopengl2 name)
     add_executable(${name} src/${name}.cpp)
     target_link_libraries(${name} PRIVATE glfw)
     target_link_libraries(${name} PRIVATE glad::glad)
     target_include_directories(${name} PRIVATE src/include)
     target_include_directories(${name} PRIVATE ${Stb_INCLUDE_DIR})
+
+    add_lint_target(${CMAKE_CURRENT_SOURCE_DIR}/src/${name}.cpp)
 endfunction()
 
 set(LEARNOPENGL2_APPS
@@ -23,6 +40,7 @@ set(LEARNOPENGL2_APPS
     1.2.hello_triangle_ex1
     1.2.hello_triangle_ex2
     1.2.hello_triangle_ex3
+
     1.3.shaders_from_file
     1.3.shaders_vertex_color
     1.3.shaders_uniform
@@ -30,6 +48,7 @@ set(LEARNOPENGL2_APPS
     1.3.shaders_ex1
     1.3.shaders_ex2
     # 1.3.shaders_ex3 # same as 1.3.shaders_vertex_color
+
     1.4.textures_triangle
     1.4.textures_square
     1.4.textures_2_texture_units

@@ -65,6 +65,8 @@ build/1.2.hello_triangle_ebo.exe
 
 Let the compiler worry about formatting and style. After building:
 ```
-clang-format -i src/include/*.h ./src/*.cpp
-clang-tidy -p build -fix-errors src/include/*.h ./src/*.cpp
+cmake --build build --target lint-all
 ```
+This will invoke `clang-format` and `clang-tidy` for all source files.
+
+Note that if using the MSVC `cl.exe` compiler, some commandline flags may be incorrect for `clang-tidy`.
