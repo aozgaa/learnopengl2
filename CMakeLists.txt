@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 23)
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+
 find_package(Stb REQUIRED)
 
 add_custom_target(lint-all)
@@ -27,6 +29,7 @@ function(add_executable_learnopengl2 name)
     add_executable(${name} src/${name}.cpp)
     target_link_libraries(${name} PRIVATE glfw)
     target_link_libraries(${name} PRIVATE glad::glad)
+    target_link_libraries(${name} PRIVATE glm::glm-header-only)
     target_include_directories(${name} PRIVATE src/include)
     target_include_directories(${name} PRIVATE ${Stb_INCLUDE_DIR})
 
@@ -55,6 +58,12 @@ set(LEARNOPENGL2_APPS
     # 1.4.textures_2_ex1 # same as 1.4.textures_2_texture_units
     1.4.textures_ex2
     1.4.textures_ex3
+    
+    1.5.transformations_translate
+    1.5.transformations_scale_rotate
+    1.5.transformations_time_corner
+    1.5.transformations_ex1
+    1.5.transformations_ex2
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
