@@ -52,6 +52,9 @@ set(LEARNOPENGL2_APPS
     1.4.textures_triangle
     1.4.textures_square
     1.4.textures_2_texture_units
+    # 1.4.textures_2_ex1 # same as 1.4.textures_2_texture_units
+    1.4.textures_ex2
+    1.4.textures_ex3
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
