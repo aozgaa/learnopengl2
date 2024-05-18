@@ -64,6 +64,11 @@ set(LEARNOPENGL2_APPS
     1.5.transformations_time_corner
     1.5.transformations_ex1
     1.5.transformations_ex2
+
+    1.6.coordinates_3d
+    1.6.coordinates_cube
+    1.6.coordinates_cube_zbuffer
+    1.6.coordinates_cubes
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
