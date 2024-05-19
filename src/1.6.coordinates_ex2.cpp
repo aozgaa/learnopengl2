@@ -19,6 +19,11 @@ void resetUniforms(int shaderProgram);
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+unsigned int cur_width  = SCR_WIDTH;
+unsigned int cur_height = SCR_HEIGHT;
+
+float xPos = 0.0, yPos = 0.0; // [0,1]
+
 const char *vertexShaderPath   = "src/1.6.coordinates_cubes.vert";
 const char *fragmentShaderPath = "src/1.6.coordinates_cubes.frag";
 
@@ -122,7 +127,15 @@ int main() {
   glfwSetFramebufferSizeCallback(window,
                                  [](GLFWwindow *window, int width, int height) {
                                    glViewport(0, 0, width, height);
+                                   cur_width  = width;
+                                   cur_height = height;
                                  });
+
+  glfwSetCursorPosCallback(window,
+                           [](GLFWwindow *window, double xpos, double ypos) {
+                             xPos = xpos / cur_width;
+                             yPos = ypos / cur_height;
+                           });
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::cerr << "failed to initialize GLAD" << std::endl;
@@ -197,7 +210,7 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, smileyTexture);
 
     view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    view = glm::translate(view, glm::vec3(xPos, yPos, -3.0f));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
     projection = glm::perspective(glm::pi<float>() * 0.25f, 800.0f / 600.0f,

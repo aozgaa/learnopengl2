@@ -209,7 +209,9 @@ int main() {
     for (size_t i = 0; i < std::size(cubePoss); ++i) {
       model = glm::mat4(1.0f);
       model = glm::translate(model, cubePoss[i]);
-      model = glm::rotate(model, glm::radians(20.0f * i) + (float)glfwGetTime(),
+      model = glm::rotate(model,
+                          glm::radians(20.0f * i) +
+                              (float)glfwGetTime() * ((i % 3) == 0),
                           glm::vec3(1.0, 0.3f, 0.5f));
       glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
       glDrawElements(GL_TRIANGLES, std::size(indices), GL_UNSIGNED_INT, 0);
