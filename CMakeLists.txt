@@ -69,6 +69,7 @@ set(LEARNOPENGL2_APPS
     1.6.coordinates_cube
     1.6.coordinates_cube_zbuffer
     1.6.coordinates_cubes
+    1.6.coordinates_cubes_whisky # generate lots of cubes randomly
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
