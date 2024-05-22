@@ -18,6 +18,9 @@ void resetUniforms(int shaderProgram);
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+unsigned int cur_width  = SCR_WIDTH;
+unsigned int cur_height = SCR_HEIGHT;
+
 const char *vertexShaderPath   = "src/1.6.coordinates_cube_zbuffer.vert";
 const char *fragmentShaderPath = "src/1.6.coordinates_cube_zbuffer.frag";
 
@@ -115,6 +118,8 @@ int main() {
   glfwSetFramebufferSizeCallback(window,
                                  [](GLFWwindow *window, int width, int height) {
                                    glViewport(0, 0, width, height);
+                                   cur_width  = width;
+                                   cur_height = height;
                                  });
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -198,8 +203,8 @@ int main() {
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-    projection = glm::perspective(glm::pi<float>() * 0.25f, 800.0f / 600.0f,
-                                  0.1f, 100.0f);
+    projection = glm::perspective(glm::pi<float>() * 0.25f,
+                                  cur_width / (float)cur_height, 0.1f, 100.0f);
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     glUseProgram(shaderProgram);

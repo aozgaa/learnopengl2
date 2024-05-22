@@ -213,8 +213,8 @@ int main() {
     view = glm::translate(view, glm::vec3(xPos, yPos, -3.0f));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-    projection = glm::perspective(glm::pi<float>() * 0.25f, 800.0f / 600.0f,
-                                  0.1f, 100.0f);
+    projection = glm::perspective(glm::pi<float>() * 0.25f,
+                                  cur_width / (float)cur_height, 0.1f, 100.0f);
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     glUseProgram(shaderProgram);
