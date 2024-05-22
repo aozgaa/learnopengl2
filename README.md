@@ -20,8 +20,8 @@ cmake -S . -B build --preset vcpkg-win -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 cmake --build build
 ```
 
-As a convenience, a preset called `vcpkg` is provided which obtains and builds dependencies on windows using vcpkg.
-In order to use it, `VCPKG_ROOT` needs to be set.
+As a convenience, presets called `vcpkg` and `vcpkg-clang` are provided which obtains and builds dependencies on windows using vcpkg.
+In order to use one, `VCPKG_ROOT` needs to be set.
 One way to do this is to create a `CMakeUserPresets.json` file with contents analogous to this:
 ```
 {
@@ -69,4 +69,5 @@ cmake --build build --target lint-all
 ```
 This will invoke `clang-format` and `clang-tidy` for all source files.
 
-Note that if using the MSVC `cl.exe` compiler, some commandline flags may be incorrect for `clang-tidy`.
+Note that if using the MSVC `cl.exe` compiler, some commandline flags may be incorrect for `clang-tidy`, which may trigger spurious errors.
+When `clang` is used, `build/compile_commands.json` will be populated with command-line flags that `clang-tidy` can leverage.

@@ -10,6 +10,17 @@
                 }
             },
             "binaryDir": "build"
+        },
+        {
+            "name": "vcpkg-clang",
+            "inherits": "vcpkg",
+            "cacheVariables": {
+                "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": {
+                    "value": "${sourceDir}/cmake/clang.cmake",
+                    "type": "FILEPATH"
+                }
+            },
+            "binaryDir": "build"
         }
     ]
 }
