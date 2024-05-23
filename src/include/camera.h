@@ -9,22 +9,21 @@
 struct Camera {
   static const glm::vec3 UP;
 
-  glm::vec3 camPos;
-  float     yaw;   // radians
-  float     pitch; // radians
+  glm::vec3 pos;
+  float     yaw;   // radians -- rightwards from z axis
+  float     pitch; // radians -- up from xz-plane
   float     fov;   // radians
-  auto     &camDir() const { return m_front; }
-  auto     &camRight() const { return m_right; }
-  auto     &camUp() const { return m_up; }
 
   Camera(glm::vec3 pos = glm::vec3(0.0f, 0.0f, 3.0f), float pitch = 0.0f,
          float yaw = 0.0f, float fov = 1.0f)
-      : camPos(pos), pitch(pitch), yaw(yaw), fov(fov) {
+      : pos(pos), pitch(pitch), yaw(yaw), fov(fov) {
     updateVecs();
   }
 
-  glm::mat4 view() const { return glm::lookAt(camPos, camPos + m_front, UP); }
+  glm::mat4 view() const { return glm::lookAt(pos, pos + m_z, UP); }
 
+  // dx > 0: turn right
+  // dy > 0: look up
   void handleMouse(float dx, float dy) {
     float mouseSensitivity = 0.005f;
     yaw += dx * mouseSensitivity;
@@ -39,37 +38,37 @@ struct Camera {
     float scrollSensitivty = 0.01f;
     fov -= yoff * scrollSensitivty;
     fov = glm::max(fov, glm::pi<float>() * 0.10f);
-    fov = glm::min(fov, glm::pi<float>() * 0.25f);
+    fov = glm::min(fov, glm::pi<float>() * 0.50f);
   }
 
   void pollKeyboard(GLFWwindow *window, float dt) {
     const float speed = 0.1f * dt;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-      camPos += speed * m_front;
+      pos += speed * m_z;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-      camPos -= speed * m_front;
+      pos -= speed * m_z;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-      camPos -= m_right * speed;
+      pos -= m_x * speed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-      camPos += m_right * speed;
+      pos += m_x * speed;
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-      camPos += m_up * speed;
+      pos += m_y * speed;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-      camPos -= m_up * speed;
+      pos -= m_y * speed;
   }
 
 private:
   void updateVecs() {
-    m_front = glm::vec3(cos(yaw) * cos(pitch),  //
-                        sin(pitch),             //
-                        sin(yaw) * cos(pitch)); //
-    m_right = glm::normalize(glm::cross(m_front, UP));
-    m_up    = glm::cross(m_right, m_front); // already orthonormal
+    m_z = glm::vec3(cos(yaw) * cos(pitch),  //
+                    sin(pitch),             //
+                    sin(yaw) * cos(pitch)); //
+    m_x = glm::normalize(glm::cross(m_z, UP));
+    m_y = glm::cross(m_x, m_z); // already orthonormal
   }
 
-  glm::vec3 m_front; // derived
-  glm::vec3 m_right; // derived
-  glm::vec3 m_up;    // derived
+  glm::vec3 m_x; // derived -- camera right
+  glm::vec3 m_y; // derived -- camera up
+  glm::vec3 m_z; // derived -- camera front
 };
 
 const glm::vec3 Camera::UP(0.0, 1.0f, 0.0f);

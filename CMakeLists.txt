@@ -82,6 +82,8 @@ set(LEARNOPENGL2_APPS
     1.7.camera_mouse
     1.7.camera_scroll
     1.7.camera_class
+    1.7.camera_ex1
+    1.7.camera_ex2
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
