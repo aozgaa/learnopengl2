@@ -14,8 +14,8 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-const char *vertexShaderPath   = "src/1.3.shaders_uniform.vert";
-const char *fragmentShaderPath = "src/1.3.shaders_uniform.frag";
+const char *vertexShaderPath   = "src/1.3.3.shaders_uniform.vert";
+const char *fragmentShaderPath = "src/1.3.3.shaders_uniform.frag";
 
 float vertices[] = {
   -0.5f, -0.5f, 0.0f, // v0

@@ -14,8 +14,8 @@ void resetUniforms(int shaderProgram);
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-const char *vertexShaderPath   = "src/1.4.3.textures_2_texture_units.vert";
-const char *fragmentShaderPath = "src/1.4.3.textures_2_texture_units.frag";
+const char *vertexShaderPath   = "src/1.4.7.textures_ex4.vert";
+const char *fragmentShaderPath = "src/1.4.7.textures_ex4.frag";
 
 float vertices[] = {
   // pos              color             texture coords
@@ -38,6 +38,9 @@ float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 int   shaderProgram = 0;
 GLint wallLoc       = 0;
 GLint smileyLoc     = 0;
+GLint mixparamLoc   = 0;
+
+float mixParam = 0.5;
 
 int main() {
   glfwInit();
@@ -107,6 +110,13 @@ int main() {
   unsigned int smileyTexture = 0;
   glGenTextures(1, &smileyTexture);
   glBindTexture(GL_TEXTURE_2D, smileyTexture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+  float borderColor[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+  glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   stbi_set_flip_vertically_on_load(true);
   auto smileyImage = stb::Image("assets/awesomeface.png");
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, smileyImage.width, smileyImage.height,
@@ -161,13 +171,23 @@ void processInput(GLFWwindow *window) {
     reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
     resetUniforms(shaderProgram);
   }
+  if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+    mixParam += 0.02;
+    glUniform1f(mixparamLoc, mixParam);
+  }
+  if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+    mixParam -= 0.02;
+    glUniform1f(mixparamLoc, mixParam);
+  }
 }
 
 void resetUniforms(int shaderProgram) {
-  wallLoc   = glGetUniformLocation(shaderProgram, "wallSampler");
-  smileyLoc = glGetUniformLocation(shaderProgram, "smileySampler");
+  wallLoc     = glGetUniformLocation(shaderProgram, "wallSampler");
+  smileyLoc   = glGetUniformLocation(shaderProgram, "smileySampler");
+  mixparamLoc = glGetUniformLocation(shaderProgram, "mixparam");
 
   glUseProgram(shaderProgram);
   glUniform1i(wallLoc, WALL_TEXTURE_UNIT);
   glUniform1i(smileyLoc, SMILEY_TEXTURE_UNIT);
+  glUniform1f(mixparamLoc, mixParam);
 }

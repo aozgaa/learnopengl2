@@ -12,8 +12,8 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-const char *vertexShaderPath   = "src/1.3.shaders_ex1.vert";
-const char *fragmentShaderPath = "src/1.3.shaders_ex1.frag";
+const char *vertexShaderPath   = "src/1.3.5.shaders_ex1.vert";
+const char *fragmentShaderPath = "src/1.3.5.shaders_ex1.frag";
 
 float vertices[] = {
   // pos              color

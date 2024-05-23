@@ -13,8 +13,8 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-const char *vertexShaderPath   = "src/1.4.textures_square.vert";
-const char *fragmentShaderPath = "src/1.4.textures_square.frag";
+const char *vertexShaderPath   = "src/1.4.2.textures_square.vert";
+const char *fragmentShaderPath = "src/1.4.2.textures_square.frag";
 
 float vertices[] = {
   // pos              color             texture coords

@@ -61,6 +61,7 @@ set(LEARNOPENGL2_APPS
     # 1.4.textures_2_ex1 # same as 1.4.textures_2_texture_units
     1.4.5.textures_ex2
     1.4.6.textures_ex3
+    1.4.7.textures_ex4
     
     1.5.1.transformations_translate
     1.5.2.transformations_scale_rotate
