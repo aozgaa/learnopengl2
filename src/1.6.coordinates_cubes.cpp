@@ -22,8 +22,8 @@ const unsigned int SCR_HEIGHT = 600;
 unsigned int cur_width  = SCR_WIDTH;
 unsigned int cur_height = SCR_HEIGHT;
 
-const char *vertexShaderPath   = "src/1.6.coordinates_cubes.vert";
-const char *fragmentShaderPath = "src/1.6.coordinates_cubes.frag";
+const char *vertexShaderPath   = "src/1.6.coordinates.vert";
+const char *fragmentShaderPath = "src/1.6.coordinates.frag";
 
 // Note it is topologically impossible to specify all face using shared vertices
 // so that the textures are mapped to each face without a tear/warp.

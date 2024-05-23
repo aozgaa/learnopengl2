@@ -21,8 +21,8 @@ const unsigned int SCR_HEIGHT = 600;
 unsigned int cur_width  = SCR_WIDTH;
 unsigned int cur_height = SCR_HEIGHT;
 
-const char *vertexShaderPath   = "src/1.6.coordinates_3d.vert";
-const char *fragmentShaderPath = "src/1.6.coordinates_3d.frag";
+const char *vertexShaderPath   = "src/1.6.coordinates.vert";
+const char *fragmentShaderPath = "src/1.6.coordinates.frag";
 
 float vertices[] = {
   // pos              color             texture coords

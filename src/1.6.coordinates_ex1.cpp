@@ -25,8 +25,8 @@ unsigned int cur_height = SCR_HEIGHT;
 
 float xPos = 0.0, yPos = 0.0; // [0,1]
 
-const char *vertexShaderPath   = "src/1.6.coordinates_cubes.vert";
-const char *fragmentShaderPath = "src/1.6.coordinates_cubes.frag";
+const char *vertexShaderPath   = "src/1.6.coordinates.vert";
+const char *fragmentShaderPath = "src/1.6.coordinates.frag";
 
 float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 

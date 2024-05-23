@@ -18,8 +18,8 @@ void resetUniforms(int shaderProgram);
 const unsigned int SCR_WIDTH  = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-const char *vertexShaderPath   = "src/1.5.transformations_time_corner.vert";
-const char *fragmentShaderPath = "src/1.5.transformations_time_corner.frag";
+const char *vertexShaderPath   = "src/1.5.transformations.vert";
+const char *fragmentShaderPath = "src/1.5.transformations.frag";
 
 float vertices[] = {
   // pos              color             texture coords
