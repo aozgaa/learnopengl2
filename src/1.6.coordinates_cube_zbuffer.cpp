@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "cube_info.h"
 #include "image.h"
 #include "shader_program.h"
 
@@ -23,64 +24,6 @@ unsigned int cur_height = SCR_HEIGHT;
 
 const char *vertexShaderPath   = "src/1.6.coordinates_cube_zbuffer.vert";
 const char *fragmentShaderPath = "src/1.6.coordinates_cube_zbuffer.frag";
-
-// note it is topologically impossible to specify all face using shared vertices
-// so that the textures are mapped to each face without a tear/warp
-// at the very least we would need to specify 12 vertices to make this work
-// if reflections are acceptable.
-// To keep everything straightforward and avoid reflections, we specify each
-// vertex 3 times, once for each face.
-//    7--------6
-//   /|       /|
-//  / |      / |
-// 3--------2  |
-// |  |     |  |
-// |  4-----|--5
-// | /      | /
-// |/       |/
-// 0--------1
-float vertices[] = {
-  // pos               texture coords
-  -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, // 0 -- front
-  0.5f,  -0.5f, 0.5f,  1.0f, 0.0f, // 1
-  0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // 2
-  -0.5f, 0.5f,  0.5f,  0.0f, 1.0f, // 3
-  0.5f,  -0.5f, -0.5f, 0.0f, 0.0f, // 5 -- back
-  -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, // 4
-  -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f, // 7
-  0.5f,  0.5f,  -0.5f, 0.0f, 1.0f, // 6
-  0.5f,  -0.5f, 0.5f,  0.0f, 0.0f, // 1 -- right
-  0.5f,  -0.5f, -0.5f, 1.0f, 0.0f, // 5
-  0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, // 6
-  0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // 2
-  -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 4 -- left
-  -0.5f, -0.5f, 0.5f,  1.0f, 0.0f, // 0
-  -0.5f, 0.5f,  0.5f,  1.0f, 1.0f, // 3
-  -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, // 7
-  -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 4 -- bottom
-  0.5f,  -0.5f, -0.5f, 1.0f, 0.0f, // 5
-  0.5f,  -0.5f, 0.5f,  1.0f, 1.0f, // 1
-  -0.5f, -0.5f, 0.5f,  0.0f, 1.0f, // 0
-  -0.5f, 0.5f,  0.5f,  0.0f, 0.0f, // 3 -- top
-  0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // 2
-  0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, // 6
-  -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, // 7
-};
-
-unsigned int indices[] = {
-  0,  1,  2,  // front
-  0,  2,  3,  //
-  4,  5,  6,  // back
-  4,  6,  7,  //
-  8,  9,  10, // right
-  8,  10, 11, //
-  12, 13, 14, // left
-  12, 14, 15, //
-  16, 17, 18, // bottom
-  16, 18, 19, //
-  20, 21, 22, // top
-  20, 22, 23, //
-};
 
 float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 
@@ -134,7 +77,8 @@ int main() {
   unsigned int vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices,
+               GL_STATIC_DRAW);
 
   unsigned int vao = 0;
   glGenVertexArrays(1, &vao);
@@ -143,7 +87,7 @@ int main() {
   unsigned int ebo = 0;
   glGenBuffers(1, &ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices,
                GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
@@ -209,7 +153,7 @@ int main() {
 
     glUseProgram(shaderProgram);
     glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, std::size(indices), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window);
     glfwPollEvents();

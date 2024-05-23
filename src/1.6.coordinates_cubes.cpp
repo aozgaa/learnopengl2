@@ -38,7 +38,7 @@ const char *fragmentShaderPath = "src/1.6.coordinates_cubes.frag";
 // | /      | /
 // |/       |/
 // 0--------1
-float vertices[] = {
+float cubeVertices[] = {
   // pos               texture coords
   -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, // 0 -- front
   0.5f,  -0.5f, 0.5f,  1.0f, 0.0f, // 1
@@ -66,7 +66,7 @@ float vertices[] = {
   -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, // 7
 };
 
-unsigned int indices[] = {
+unsigned int cubeIndices[] = {
   0,  1,  2,  // front
   0,  2,  3,  //
   4,  5,  6,  // back
@@ -81,7 +81,7 @@ unsigned int indices[] = {
   20, 22, 23, //
 };
 
-glm::vec3 cubePoss[] = {
+glm::vec3 cubePositions[] = {
   glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
   glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),
   glm::vec3(2.4f, -0.4f, -3.5f),  glm::vec3(-1.7f, 3.0f, -7.5f),
@@ -141,7 +141,8 @@ int main() {
   unsigned int vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices,
+               GL_STATIC_DRAW);
 
   unsigned int vao = 0;
   glGenVertexArrays(1, &vao);
@@ -150,7 +151,7 @@ int main() {
   unsigned int ebo = 0;
   glGenBuffers(1, &ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices,
                GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
@@ -211,13 +212,13 @@ int main() {
 
     glUseProgram(shaderProgram);
     glBindVertexArray(vao);
-    for (size_t i = 0; i < std::size(cubePoss); ++i) {
+    for (size_t i = 0; i < std::size(cubePositions); ++i) {
       model = glm::mat4(1.0f);
-      model = glm::translate(model, cubePoss[i]);
+      model = glm::translate(model, cubePositions[i]);
       model = glm::rotate(model, glm::radians(20.0f * i) + (float)glfwGetTime(),
                           glm::vec3(1.0, 0.3f, 0.5f));
       glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-      glDrawElements(GL_TRIANGLES, std::size(indices), GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
     }
 
     glfwSwapBuffers(window);

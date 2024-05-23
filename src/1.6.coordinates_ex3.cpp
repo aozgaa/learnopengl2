@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "cube_info.h"
 #include "image.h"
 #include "shader_program.h"
 
@@ -24,70 +25,6 @@ unsigned int cur_height = SCR_HEIGHT;
 
 const char *vertexShaderPath   = "src/1.6.coordinates_cubes.vert";
 const char *fragmentShaderPath = "src/1.6.coordinates_cubes.frag";
-
-// Note it is topologically impossible to specify all face using shared vertices
-// so that the textures are mapped to each face without a tear/warp.
-// If reflections are acceptable we still need 12 vertices.
-// To avoid reflections, we specify each vertex 3 times, once per adjacent face.
-//    7--------6
-//   /|       /|
-//  / |      / |
-// 3--------2  |
-// |  |     |  |
-// |  4-----|--5
-// | /      | /
-// |/       |/
-// 0--------1
-float vertices[] = {
-  // pos               texture coords
-  -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, // 0 -- front
-  0.5f,  -0.5f, 0.5f,  1.0f, 0.0f, // 1
-  0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // 2
-  -0.5f, 0.5f,  0.5f,  0.0f, 1.0f, // 3
-  0.5f,  -0.5f, -0.5f, 0.0f, 0.0f, // 5 -- back
-  -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, // 4
-  -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f, // 7
-  0.5f,  0.5f,  -0.5f, 0.0f, 1.0f, // 6
-  0.5f,  -0.5f, 0.5f,  0.0f, 0.0f, // 1 -- right
-  0.5f,  -0.5f, -0.5f, 1.0f, 0.0f, // 5
-  0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, // 6
-  0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // 2
-  -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 4 -- left
-  -0.5f, -0.5f, 0.5f,  1.0f, 0.0f, // 0
-  -0.5f, 0.5f,  0.5f,  1.0f, 1.0f, // 3
-  -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, // 7
-  -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 4 -- bottom
-  0.5f,  -0.5f, -0.5f, 1.0f, 0.0f, // 5
-  0.5f,  -0.5f, 0.5f,  1.0f, 1.0f, // 1
-  -0.5f, -0.5f, 0.5f,  0.0f, 1.0f, // 0
-  -0.5f, 0.5f,  0.5f,  0.0f, 0.0f, // 3 -- top
-  0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // 2
-  0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, // 6
-  -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, // 7
-};
-
-unsigned int indices[] = {
-  0,  1,  2,  // front
-  0,  2,  3,  //
-  4,  5,  6,  // back
-  4,  6,  7,  //
-  8,  9,  10, // right
-  8,  10, 11, //
-  12, 13, 14, // left
-  12, 14, 15, //
-  16, 17, 18, // bottom
-  16, 18, 19, //
-  20, 21, 22, // top
-  20, 22, 23, //
-};
-
-glm::vec3 cubePoss[] = {
-  glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
-  glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),
-  glm::vec3(2.4f, -0.4f, -3.5f),  glm::vec3(-1.7f, 3.0f, -7.5f),
-  glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
-  glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)
-};
 
 float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 
@@ -141,7 +78,8 @@ int main() {
   unsigned int vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices,
+               GL_STATIC_DRAW);
 
   unsigned int vao = 0;
   glGenVertexArrays(1, &vao);
@@ -150,7 +88,7 @@ int main() {
   unsigned int ebo = 0;
   glGenBuffers(1, &ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices,
                GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
@@ -211,15 +149,15 @@ int main() {
 
     glUseProgram(shaderProgram);
     glBindVertexArray(vao);
-    for (size_t i = 0; i < std::size(cubePoss); ++i) {
+    for (size_t i = 0; i < std::size(cubePositions); ++i) {
       model = glm::mat4(1.0f);
-      model = glm::translate(model, cubePoss[i]);
+      model = glm::translate(model, cubePositions[i]);
       model = glm::rotate(model,
                           glm::radians(20.0f * i) +
                               (float)glfwGetTime() * ((i % 3) == 0),
                           glm::vec3(1.0, 0.3f, 0.5f));
       glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-      glDrawElements(GL_TRIANGLES, std::size(indices), GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
     }
 
     glfwSwapBuffers(window);
