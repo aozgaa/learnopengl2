@@ -25,6 +25,7 @@ endfunction()
 add_lint_target(${CMAKE_CURRENT_SOURCE_DIR}/src/include/file.h)
 add_lint_target(${CMAKE_CURRENT_SOURCE_DIR}/src/include/image.h)
 add_lint_target(${CMAKE_CURRENT_SOURCE_DIR}/src/include/shader_program.h)
+add_lint_target(${CMAKE_CURRENT_SOURCE_DIR}/src/include/camera.h)
 
 function(add_executable_learnopengl2 name)
     add_executable(${name} src/${name}.cpp)
@@ -74,6 +75,13 @@ set(LEARNOPENGL2_APPS
     1.6.coordinates_ex1 # use mouse
     1.6.coordinates_ex2 # use mouse
     1.6.coordinates_ex3
+
+    1.7.camera_lookat
+    1.7.camera_rotate
+    1.7.camera_keyboard
+    1.7.camera_mouse
+    1.7.camera_scroll
+    1.7.camera_class
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
