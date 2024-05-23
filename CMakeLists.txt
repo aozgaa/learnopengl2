@@ -39,51 +39,52 @@ function(add_executable_learnopengl2 name)
 endfunction()
 
 set(LEARNOPENGL2_APPS
-    1.1.hello_window
-    1.2.hello_triangle
-    1.2.hello_triangle_ebo
-    1.2.hello_triangle_ex1
-    1.2.hello_triangle_ex2
-    1.2.hello_triangle_ex3
+    1.1.1.hello_window
 
-    1.3.shaders_from_file
-    1.3.shaders_vertex_color
-    1.3.shaders_uniform
-    1.3.shaders_color_attr
-    1.3.shaders_ex1
-    1.3.shaders_ex2
+    1.2.1.hello_triangle
+    1.2.2.hello_triangle_ebo
+    1.2.3.hello_triangle_ex1
+    1.2.4.hello_triangle_ex2
+    1.2.5.hello_triangle_ex3
+
+    1.3.1.shaders_from_file
+    1.3.2.shaders_vertex_color
+    1.3.3.shaders_uniform
+    1.3.4.shaders_color_attr
+    1.3.5.shaders_ex1
+    1.3.6.shaders_ex2
     # 1.3.shaders_ex3 # same as 1.3.shaders_vertex_color
 
-    1.4.textures_triangle
-    1.4.textures_square
-    1.4.textures_2_texture_units
+    1.4.1.textures_triangle
+    1.4.2.textures_square
+    1.4.3.textures_2_texture_units
     # 1.4.textures_2_ex1 # same as 1.4.textures_2_texture_units
-    1.4.textures_ex2
-    1.4.textures_ex3
+    1.4.5.textures_ex2
+    1.4.6.textures_ex3
     
-    1.5.transformations_translate
-    1.5.transformations_scale_rotate
-    1.5.transformations_time_corner
-    1.5.transformations_ex1
-    1.5.transformations_ex2
+    1.5.1.transformations_translate
+    1.5.2.transformations_scale_rotate
+    1.5.3.transformations_time_corner
+    1.5.4.transformations_ex1
+    1.5.5.transformations_ex2
 
-    1.6.coordinates_3d
-    1.6.coordinates_cube
-    1.6.coordinates_cube_zbuffer
-    1.6.coordinates_cubes
-    1.6.coordinates_cubes_whisky # generate lots of cubes randomly
-    1.6.coordinates_ex1 # use mouse
-    1.6.coordinates_ex2 # use mouse
-    1.6.coordinates_ex3
+    1.6.1.coordinates_3d
+    1.6.2.coordinates_cube
+    1.6.3.coordinates_cube_zbuffer
+    1.6.4.coordinates_cubes
+    1.6.5.coordinates_cubes_whisky # generate lots of cubes randomly
+    1.6.6.coordinates_ex1 # use mouse
+    1.6.7.coordinates_ex2 # use mouse
+    1.6.8.coordinates_ex3
 
-    1.7.camera_lookat
-    1.7.camera_rotate
-    1.7.camera_keyboard
-    1.7.camera_mouse
-    1.7.camera_scroll
-    1.7.camera_class
-    1.7.camera_ex1
-    1.7.camera_ex2
+    1.7.1.camera_lookat
+    1.7.2.camera_rotate
+    1.7.3.camera_keyboard
+    1.7.4.camera_mouse
+    1.7.5.camera_scroll
+    1.7.6.camera_class
+    1.7.7.camera_ex1
+    1.7.8.camera_ex2
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
