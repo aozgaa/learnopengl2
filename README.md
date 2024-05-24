@@ -29,7 +29,7 @@ One way to do this is to create a `CMakeUserPresets.json` file with contents ana
     "configurePresets": [
         {
             "name": "default",
-            "inherits": "vcpkg",
+            "inherits": "vcpkg-clang",
             "generator": "Ninja",
             "environment": {
                 "VCPKG_ROOT": "C:/Users/$env{UserName}/r/vcpkg"
@@ -47,7 +47,7 @@ cmake --build build
 The build has been tested on the following platforms:
 * Windows 10 with
 [Build Tools for Visual Studio 2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022)
-and the powershell developer command prompt.
+and the powershell developer command prompt. **The build will not locate tools correctly from a standard powershell instance**.[1]
 * Ubuntu 23.10 with clang/ninja
 Alternate presets could be created to support other platforms, shells, and dependency-management methods.
 
@@ -71,3 +71,5 @@ This will invoke `clang-format` and `clang-tidy` for all source files.
 
 Note that if using the MSVC `cl.exe` compiler, some commandline flags may be incorrect for `clang-tidy`, which may trigger spurious errors.
 When `clang` is used, `build/compile_commands.json` will be populated with command-line flags that `clang-tidy` can leverage.
+
+[1] This can cause problems if, eg, your editor/ide (eg: `vscode`) does not have the dev command prompt environment variables set. One workaround is to [spawn your editor from a dev command prompt](https://code.visualstudio.com/docs/cpp/config-msvc#_check-your-microsoft-visual-c-installation).

@@ -14,6 +14,7 @@
         {
             "name": "vcpkg-clang",
             "inherits": "vcpkg",
+            "generator": "Ninja",
             "cacheVariables": {
                 "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": {
                     "value": "${sourceDir}/cmake/clang.cmake",

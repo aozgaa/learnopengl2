@@ -86,6 +86,8 @@ set(LEARNOPENGL2_APPS
     1.7.6.camera_class
     1.7.7.camera_ex1
     1.7.8.camera_ex2
+
+    2.1.1.color_container
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
