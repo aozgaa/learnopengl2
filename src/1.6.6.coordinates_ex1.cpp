@@ -17,11 +17,8 @@
 void processInput(GLFWwindow *window);
 void resetUniforms(int shaderProgram);
 
-const unsigned int SCR_WIDTH  = 800;
-const unsigned int SCR_HEIGHT = 600;
-
-unsigned int cur_width  = SCR_WIDTH;
-unsigned int cur_height = SCR_HEIGHT;
+unsigned int windowWidth  = 800;
+unsigned int windowHeight = 600;
 
 float xPos = 0.0, yPos = 0.0; // [0,1]
 
@@ -53,8 +50,8 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow *window =
-      glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
+  GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
+                                        "LearnOpenGL", nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -64,14 +61,14 @@ int main() {
   glfwSetFramebufferSizeCallback(window,
                                  [](GLFWwindow *window, int width, int height) {
                                    glViewport(0, 0, width, height);
-                                   cur_width  = width;
-                                   cur_height = height;
+                                   windowWidth  = width;
+                                   windowHeight = height;
                                  });
 
   glfwSetCursorPosCallback(window,
                            [](GLFWwindow *window, double xpos, double ypos) {
-                             xPos = xpos / cur_width;
-                             yPos = ypos / cur_height;
+                             xPos = xpos / windowWidth;
+                             yPos = ypos / windowHeight;
                            });
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -153,7 +150,7 @@ int main() {
 
     projection = glm::perspective(
         xPos * glm::pi<float>() /*seems to be evaluated mod pi*/,
-        (yPos + 0.5f) * cur_width / (float)cur_height, 0.1f, 100.0f);
+        (yPos + 0.5f) * windowWidth / (float)windowHeight, 0.1f, 100.0f);
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     glUseProgram(shaderProgram);
