@@ -57,11 +57,11 @@ struct Camera {
       pos -= m_y * speed;
   }
 
-private:
+protected:
   void updateVecs() {
-    m_z = glm::vec3(cos(yaw) * cos(pitch),  //
-                    sin(pitch),             //
-                    sin(yaw) * cos(pitch)); //
+    m_z = glm::vec3(sin(yaw) * cos(pitch),   //
+                    sin(pitch),              //
+                    -cos(yaw) * cos(pitch)); //
     m_x = glm::normalize(glm::cross(m_z, UP));
     m_y = glm::cross(m_x, m_z); // already orthonormal
   }

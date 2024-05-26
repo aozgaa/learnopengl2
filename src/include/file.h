@@ -2,8 +2,11 @@
 
 #include <cstring>
 #include <filesystem>
+#include <source_location>
 #include <string>
 #include <unordered_map>
+
+constexpr std::string currentBasename(std::source_location location);
 
 std::string readFile(const std::string &path);
 /** returns true iff file has changed since last time `fileChanged` was called
@@ -35,4 +38,23 @@ bool fileChanged(const std::string &path) {
     return true;
   }
   return false;
+}
+
+constexpr std::string currentBasename(
+    std::source_location location = std::source_location::current()) {
+  auto file_name  = location.file_name();
+  auto base_start = file_name;
+  auto it         = file_name;
+  auto end        = it;
+  for (auto it = file_name; *it != '\0'; ++it) {
+    if (*it == '/' || *it == '\\') {
+      base_start = it + 1;
+    }
+    if (*it == '.') {
+      end = it;
+    }
+  }
+  std::string res(base_start, end);
+
+  return res;
 }

@@ -61,6 +61,11 @@ build/1.2.hello_triangle_ebo.exe
 ...
 ```
 
+To run all from a ninja-based build on windows, run:
+```
+foreach ($f in Get-ChildItem build -Filter *.exe ) { . $f; }
+```
+
 # Linting
 
 Let the compiler worry about formatting and style. After building:
@@ -73,3 +78,9 @@ Note that if using the MSVC `cl.exe` compiler, some commandline flags may be inc
 When `clang` is used, `build/compile_commands.json` will be populated with command-line flags that `clang-tidy` can leverage.
 
 [1] This can cause problems if, eg, your editor/ide (eg: `vscode`) does not have the dev command prompt environment variables set. One workaround is to [spawn your editor from a dev command prompt](https://code.visualstudio.com/docs/cpp/config-msvc#_check-your-microsoft-visual-c-installation).
+
+# TODO
+- use gl types consistently instead of `int`, `unsigned int`, etc
+- fix camera so it starts pointing towards negative z-axis:
+  + with default yaw of 0.0?
+  + with yaw 0.0 pointing towards x-axis and default yaw of -pi/2?

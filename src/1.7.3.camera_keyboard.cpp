@@ -29,8 +29,8 @@ void resetUniforms(int shaderProgram);
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
-const char *vertexShaderPath   = "src/1.7.camera_lookat.vert";
-const char *fragmentShaderPath = "src/1.7.camera_lookat.frag";
+const char *vertexShaderPath   = "src/1.7.camera.vert";
+const char *fragmentShaderPath = "src/1.7.camera.frag";
 
 float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 
@@ -49,7 +49,7 @@ glm::mat4 view       = glm::mat4(1.0f);
 glm::mat4 projection = glm::mat4(1.0f);
 Camera    camera{ .camPos = glm::vec3(0.0, 0.0, 3.0),
                   .target = glm::vec3(0.0f),
-                  .camDir = glm::vec3(0.0f, 0.0f, 1.0f) };
+                  .camDir = glm::vec3(0.0f, 0.0f, -1.0f) };
 
 float frameStart = 0.0f;
 float dt         = 0.0f; // time spent in last frame
@@ -63,8 +63,8 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
-                                        "LearnOpenGL", nullptr, nullptr);
+  GLFWwindow *window = glfwCreateWindow(
+      windowWidth, windowHeight, currentBasename().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();

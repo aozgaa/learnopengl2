@@ -15,14 +15,17 @@
 #include <string>
 
 struct Camera {
+  static const glm::vec3 up;
+
   glm::vec3 camPos;
   float     pitch;
   float     yaw;
-  glm::vec3 up;       // constant
-  glm::vec3 camDir;   // derived
+  glm::vec3 front;    // derived
   glm::vec3 camRight; // derived
   glm::vec3 camUp;    // derived
 };
+
+glm::vec3 const Camera::up(0.0f, 1.0f, 0.0f);
 
 void processInput(GLFWwindow *window);
 void resetUniforms(int shaderProgram);
@@ -30,8 +33,8 @@ void resetUniforms(int shaderProgram);
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
-const char *vertexShaderPath   = "src/1.7.camera_lookat.vert";
-const char *fragmentShaderPath = "src/1.7.camera_lookat.frag";
+const char *vertexShaderPath   = "src/1.7.camera.vert";
+const char *fragmentShaderPath = "src/1.7.camera.frag";
 
 float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 
@@ -68,8 +71,8 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
-                                        "LearnOpenGL", nullptr, nullptr);
+  GLFWwindow *window = glfwCreateWindow(
+      windowWidth, windowHeight, currentBasename().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -98,7 +101,7 @@ int main() {
 
         float mouseSensitivity = 0.005f;
         camera.yaw += dx * mouseSensitivity;
-        camera.pitch += dy * mouseSensitivity;
+        camera.pitch -= dy * mouseSensitivity;
         camera.yaw   = glm::mod(camera.yaw, 2 * glm::pi<float>());
         camera.pitch = glm::min(camera.pitch, glm::pi<float>() * 0.4999f);
         camera.pitch = glm::max(camera.pitch, -glm::pi<float>() * 0.4999f);
@@ -171,13 +174,12 @@ int main() {
     frameStart = dt;
 
     processInput(window);
-    camera.camDir =
-        glm::vec3(cos(camera.yaw) * cos(camera.pitch), sin(camera.pitch),
-                  sin(camera.yaw) * cos(camera.pitch));
-    camera.up       = glm::vec3(0.0f, 1.0f, 0.0f);
-    camera.camRight = glm::normalize(glm::cross(camera.up, camera.camDir));
+    camera.front =
+        glm::vec3(sin(camera.yaw) * cos(camera.pitch), sin(camera.pitch),
+                  -cos(camera.yaw) * cos(camera.pitch));
+    camera.camRight = glm::normalize(glm::cross(camera.front, Camera::up));
     camera.camUp =
-        glm::cross(camera.camDir, camera.camRight); // already normalized
+        glm::cross(camera.camRight, camera.front); // already normalized
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -189,7 +191,7 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, smileyTexture);
 
     glm::mat4 view;
-    view = glm::lookAt(camera.camPos, camera.camPos - camera.camDir, camera.up);
+    view = glm::lookAt(camera.camPos, camera.camPos + camera.front, Camera::up);
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
     projection =
@@ -233,17 +235,17 @@ void processInput(GLFWwindow *window) {
   }
   const float speed = 0.1f * dt;
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    camera.camPos -= speed * camera.camDir;
+    camera.camPos += speed * camera.front;
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    camera.camPos += speed * camera.camDir;
+    camera.camPos -= speed * camera.front;
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     camera.camPos -= camera.camRight * speed;
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     camera.camPos += camera.camRight * speed;
   if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-    camera.camPos -= camera.camUp * speed;
-  if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     camera.camPos += camera.camUp * speed;
+  if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    camera.camPos -= camera.camUp * speed;
 }
 
 void resetUniforms(int shaderProgram) {

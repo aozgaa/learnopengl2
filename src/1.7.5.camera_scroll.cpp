@@ -15,15 +15,18 @@
 #include <string>
 
 struct Camera {
-  glm::vec3 camPos;
+  static const glm::vec3 up;
+
+  glm::vec3 camPos;   // radians
   float     pitch;    // radians
   float     yaw;      // radians
   float     fov;      // radians
-  glm::vec3 up;       // constant
-  glm::vec3 camDir;   // derived
+  glm::vec3 front;    // derived
   glm::vec3 camRight; // derived
   glm::vec3 camUp;    // derived
 };
+
+glm::vec3 const Camera::up(0.0f, 1.0f, 0.0f);
 
 void processInput(GLFWwindow *window);
 void resetUniforms(int shaderProgram);
@@ -31,8 +34,8 @@ void resetUniforms(int shaderProgram);
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
-const char *vertexShaderPath   = "src/1.7.camera_lookat.vert";
-const char *fragmentShaderPath = "src/1.7.camera_lookat.frag";
+const char *vertexShaderPath   = "src/1.7.camera.vert";
+const char *fragmentShaderPath = "src/1.7.camera.frag";
 
 float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 
@@ -70,8 +73,8 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
-                                        "LearnOpenGL", nullptr, nullptr);
+  GLFWwindow *window = glfwCreateWindow(
+      windowWidth, windowHeight, currentBasename().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -100,7 +103,7 @@ int main() {
 
         float mouseSensitivity = 0.005f;
         camera.yaw += dx * mouseSensitivity;
-        camera.pitch += dy * mouseSensitivity;
+        camera.pitch -= dy * mouseSensitivity;
         camera.yaw   = glm::mod(camera.yaw, 2 * glm::pi<float>());
         camera.pitch = glm::min(camera.pitch, glm::pi<float>() * 0.4999f);
         camera.pitch = glm::max(camera.pitch, -glm::pi<float>() * 0.4999f);
@@ -110,7 +113,7 @@ int main() {
         float scrollSensitivty = 0.01f;
         camera.fov -= yoff * scrollSensitivty;
         camera.fov = glm::max(camera.fov, glm::pi<float>() * 0.10f);
-        camera.fov = glm::min(camera.fov, glm::pi<float>() * 0.25f);
+        camera.fov = glm::min(camera.fov, glm::pi<float>() * 0.50f);
       });
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -180,13 +183,12 @@ int main() {
     frameStart = dt;
 
     processInput(window);
-    camera.camDir =
-        glm::vec3(cos(camera.yaw) * cos(camera.pitch), sin(camera.pitch),
-                  sin(camera.yaw) * cos(camera.pitch));
-    camera.up       = glm::vec3(0.0f, 1.0f, 0.0f);
-    camera.camRight = glm::normalize(glm::cross(camera.up, camera.camDir));
+    camera.front =
+        glm::vec3(sin(camera.yaw) * cos(camera.pitch), sin(camera.pitch),
+                  -cos(camera.yaw) * cos(camera.pitch));
+    camera.camRight = glm::normalize(glm::cross(camera.front, Camera::up));
     camera.camUp =
-        glm::cross(camera.camDir, camera.camRight); // already orthonormal
+        glm::cross(camera.camRight, camera.front); // already normalized
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -198,7 +200,7 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, smileyTexture);
 
     glm::mat4 view;
-    view = glm::lookAt(camera.camPos, camera.camPos - camera.camDir, camera.up);
+    view = glm::lookAt(camera.camPos, camera.camPos + camera.front, camera.up);
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
     projection = glm::perspective(camera.fov, windowWidth / (float)windowHeight,
@@ -241,9 +243,9 @@ void processInput(GLFWwindow *window) {
   }
   const float speed = 0.1f * dt;
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    camera.camPos -= speed * camera.camDir;
+    camera.camPos += speed * camera.front;
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    camera.camPos += speed * camera.camDir;
+    camera.camPos -= speed * camera.front;
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     camera.camPos -= camera.camRight * speed;
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
