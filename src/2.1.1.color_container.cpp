@@ -36,7 +36,6 @@ struct LightContext {
   GLint        modelLoc;
   GLint        viewLoc;
   GLint        projectionLoc;
-  GLint        objectColorLoc;
   GLint        lightColorLoc;
 };
 
@@ -143,8 +142,9 @@ int main() {
 
     model = glm::mat4(1.0f);
 
-    auto lightColor = glm::vec3(1.0f);
-    auto lightPos   = glm::vec3(0.5f, 1.0f, 0.8f);
+    auto lightColor =
+        glm::vec3(1.0f, 1.0f, float(0.5f + 0.5 * sin(glfwGetTime())));
+    auto lightPos = glm::vec3(0.5f, 1.0f, 0.8f);
 
     glUseProgram(cube.program);
 
@@ -154,7 +154,7 @@ int main() {
                        glm::value_ptr(projection));
     glUniformMatrix4fv(cube.modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniform3f(cube.objectColorLoc, 1.0f, 0.5f, 0.31f);
-    glUniform3f(cube.lightColorLoc, 1.0f, 1.0f, 1.0f);
+    glUniform3f(cube.lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
     glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
 
     model = glm::mat4(1.0f);
@@ -166,8 +166,7 @@ int main() {
     glUniformMatrix4fv(light.projectionLoc, 1, GL_FALSE,
                        glm::value_ptr(projection));
     glUniformMatrix4fv(light.modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    glUniform3f(light.objectColorLoc, 1.0f, 1.0f, 1.0f);
-    glUniform3f(light.lightColorLoc, 1.0f, 1.0f, 1.0f);
+    glUniform3f(light.lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
     glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window);
@@ -242,8 +241,7 @@ LightContext initLight(const CubeContext &cube) {
 
   reload3d(res, lightVertexShaderPath, lightFragmentShaderPath);
 
-  res.objectColorLoc = glGetUniformLocation(res.program, "objectColor");
-  res.lightColorLoc  = glGetUniformLocation(res.program, "lightColor");
+  res.lightColorLoc = glGetUniformLocation(res.program, "lightColor");
 
   unsigned int vao = 0;
   glGenVertexArrays(1, &vao);
