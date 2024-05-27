@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include <array>
+
 // Note it is topologically impossible to specify all face using shared vertices
 // so that the textures are mapped to each face without a tear/warp.
 // If reflections are acceptable we still need 12 vertices.
@@ -15,7 +17,8 @@
 // | /      | /
 // |/       |/
 // 0--------1
-float cubeVertices[] = {
+const unsigned int CUBE_VERTEX_NELTS = 5;
+float              cubeVertices[]    = {
   // pos               texture coords
   -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, // 0 -- front
   0.5f,  -0.5f, 0.5f,  1.0f, 0.0f, // 1
@@ -42,6 +45,7 @@ float cubeVertices[] = {
   0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, // 6
   -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, // 7
 };
+static_assert(CUBE_VERTEX_NELTS * 6 * 4 == std::size(cubeVertices));
 
 unsigned int cubeIndices[] = {
   0,  1,  2,  // front

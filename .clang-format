@@ -6,4 +6,5 @@ AlignConsecutiveAssignments: Consecutive
 AlignConsecutiveDeclarations: Consecutive
 BinPackArguments: true
 BinPackParameters: true
+BreakTemplateDeclarations: Yes
 Cpp11BracedListStyle: false
