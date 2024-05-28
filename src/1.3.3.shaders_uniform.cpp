@@ -34,20 +34,19 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
-                                        "LearnOpenGL", nullptr, nullptr);
+  GLFWwindow *window =
+      glfwCreateWindow(windowWidth, windowHeight, "LearnOpenGL", nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();
     exit(1);
   }
   glfwMakeContextCurrent(window);
-  glfwSetFramebufferSizeCallback(window,
-                                 [](GLFWwindow *window, int width, int height) {
-                                   glViewport(0, 0, width, height);
-                                   windowWidth  = width;
-                                   windowHeight = height;
-                                 });
+  glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width, int height) {
+    glViewport(0, 0, width, height);
+    windowWidth  = width;
+    windowHeight = height;
+  });
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::cerr << "failed to initialize GLAD" << std::endl;
@@ -81,10 +80,9 @@ int main() {
 
     processInput(window);
 
-    float timeValue  = glfwGetTime();
-    float greenValue = (sin(timeValue * 20.0f) / 2.0f) + 0.5f;
-    int   uniformColorLocation =
-        glGetUniformLocation(shaderProgram, "uniformColor");
+    float timeValue            = glfwGetTime();
+    float greenValue           = (sin(timeValue * 20.0f) / 2.0f) + 0.5f;
+    int   uniformColorLocation = glGetUniformLocation(shaderProgram, "uniformColor");
     glUseProgram(shaderProgram);
     glUniform4f(uniformColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 

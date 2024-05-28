@@ -73,48 +73,45 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow *window = glfwCreateWindow(
-      windowWidth, windowHeight, currentBasename().c_str(), nullptr, nullptr);
+  GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
+                                        currentBasename().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();
     exit(1);
   }
   glfwMakeContextCurrent(window);
-  glfwSetFramebufferSizeCallback(window,
-                                 [](GLFWwindow *window, int width, int height) {
-                                   glViewport(0, 0, width, height);
-                                   windowWidth  = width;
-                                   windowHeight = height;
-                                 });
+  glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width, int height) {
+    glViewport(0, 0, width, height);
+    windowWidth  = width;
+    windowHeight = height;
+  });
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glfwSetWindowFocusCallback(window, [](GLFWwindow *window, int focused) {
     gainedFocus = focused == GLFW_TRUE;
   });
-  glfwSetCursorPosCallback(
-      window, [](GLFWwindow *window, double dx, double dy) {
-        glfwSetCursorPos(window, 0, 0); // reset to maintain precision
+  glfwSetCursorPosCallback(window, [](GLFWwindow *window, double dx, double dy) {
+    glfwSetCursorPos(window, 0, 0); // reset to maintain precision
 
-        if (gainedFocus) {
-          gainedFocus = false;
-          return; // ignore movement on first frame
-        }
+    if (gainedFocus) {
+      gainedFocus = false;
+      return; // ignore movement on first frame
+    }
 
-        float mouseSensitivity = 0.005f;
-        camera.yaw += dx * mouseSensitivity;
-        camera.pitch -= dy * mouseSensitivity;
-        camera.yaw   = glm::mod(camera.yaw, 2 * glm::pi<float>());
-        camera.pitch = glm::min(camera.pitch, glm::pi<float>() * 0.4999f);
-        camera.pitch = glm::max(camera.pitch, -glm::pi<float>() * 0.4999f);
-      });
-  glfwSetScrollCallback(
-      window, [](GLFWwindow *window, double xoff, double yoff) {
-        float scrollSensitivty = 0.01f;
-        camera.fov -= yoff * scrollSensitivty;
-        camera.fov = glm::max(camera.fov, glm::pi<float>() * 0.10f);
-        camera.fov = glm::min(camera.fov, glm::pi<float>() * 0.50f);
-      });
+    float mouseSensitivity = 0.005f;
+    camera.yaw += dx * mouseSensitivity;
+    camera.pitch -= dy * mouseSensitivity;
+    camera.yaw   = glm::mod(camera.yaw, 2 * glm::pi<float>());
+    camera.pitch = glm::min(camera.pitch, glm::pi<float>() * 0.4999f);
+    camera.pitch = glm::max(camera.pitch, -glm::pi<float>() * 0.4999f);
+  });
+  glfwSetScrollCallback(window, [](GLFWwindow *window, double xoff, double yoff) {
+    float scrollSensitivty = 0.01f;
+    camera.fov -= yoff * scrollSensitivty;
+    camera.fov = glm::max(camera.fov, glm::pi<float>() * 0.10f);
+    camera.fov = glm::min(camera.fov, glm::pi<float>() * 0.50f);
+  });
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::cerr << "failed to initialize GLAD" << std::endl;
@@ -128,8 +125,7 @@ int main() {
   unsigned int vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices,
-               GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
   unsigned int vao = 0;
   glGenVertexArrays(1, &vao);
@@ -138,8 +134,7 @@ int main() {
   unsigned int ebo = 0;
   glGenBuffers(1, &ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices,
-               GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                         (void *)(0 * sizeof(float))); // position
@@ -155,8 +150,8 @@ int main() {
   glGenTextures(1, &wallTexture);
   glBindTexture(GL_TEXTURE_2D, wallTexture);
   auto wallImage = stb::Image("assets/wall.jpg");
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, wallImage.width, wallImage.height, 0,
-               GL_RGB, GL_UNSIGNED_BYTE, wallImage.data);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, wallImage.width, wallImage.height, 0, GL_RGB,
+               GL_UNSIGNED_BYTE, wallImage.data);
   glGenerateMipmap(GL_TEXTURE_2D);
 
   unsigned int smileyTexture = 0;
@@ -164,8 +159,8 @@ int main() {
   glBindTexture(GL_TEXTURE_2D, smileyTexture);
   stbi_set_flip_vertically_on_load(true);
   auto smileyImage = stb::Image("assets/awesomeface.png");
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, smileyImage.width, smileyImage.height,
-               0, GL_RGBA, GL_UNSIGNED_BYTE, smileyImage.data);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, smileyImage.width, smileyImage.height, 0,
+               GL_RGBA, GL_UNSIGNED_BYTE, smileyImage.data);
   glGenerateMipmap(GL_TEXTURE_2D);
 
   glBindTexture(GL_TEXTURE_2D, 0); // unbind
@@ -183,12 +178,10 @@ int main() {
     frameStart = dt;
 
     processInput(window);
-    camera.front =
-        glm::vec3(sin(camera.yaw) * cos(camera.pitch), sin(camera.pitch),
-                  -cos(camera.yaw) * cos(camera.pitch));
+    camera.front    = glm::vec3(sin(camera.yaw) * cos(camera.pitch), sin(camera.pitch),
+                                -cos(camera.yaw) * cos(camera.pitch));
     camera.camRight = glm::normalize(glm::cross(camera.front, Camera::up));
-    camera.camUp =
-        glm::cross(camera.camRight, camera.front); // already normalized
+    camera.camUp    = glm::cross(camera.camRight, camera.front); // already normalized
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -203,8 +196,8 @@ int main() {
     view = glm::lookAt(camera.camPos, camera.camPos + camera.front, camera.up);
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-    projection = glm::perspective(camera.fov, windowWidth / (float)windowHeight,
-                                  0.1f, 100.0f);
+    projection =
+        glm::perspective(camera.fov, windowWidth / (float)windowHeight, 0.1f, 100.0f);
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     glUseProgram(shaderProgram);
@@ -212,8 +205,7 @@ int main() {
     for (size_t i = 0; i < std::size(cubePositions); ++i) {
       model = glm::mat4(1.0f);
       model = glm::translate(model, cubePositions[i]);
-      model = glm::rotate(model, glm::radians(20.0f * i),
-                          glm::vec3(1.0, 0.3f, 0.5f));
+      model = glm::rotate(model, glm::radians(20.0f * i), glm::vec3(1.0, 0.3f, 0.5f));
       glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
       glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
     }

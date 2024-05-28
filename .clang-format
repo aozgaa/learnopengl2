@@ -1,10 +1,9 @@
 BasedOnStyle: LLVM
 IndentWidth: 2
-ColumnLimit: 80
+ColumnLimit: 90
 AlignArrayOfStructures: Right
 AlignConsecutiveAssignments: Consecutive
 AlignConsecutiveDeclarations: Consecutive
 BinPackArguments: true
 BinPackParameters: true
-BreakTemplateDeclarations: Yes
 Cpp11BracedListStyle: false

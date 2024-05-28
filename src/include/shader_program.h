@@ -15,8 +15,7 @@ concept is_3d_context = requires(T v) {
   { v.projectionLoc } -> std::same_as<GLint &>;
 };
 
-void reloadShaders(int &shaderProgram, const char *vertPath,
-                   const char *fragPath);
+void reloadShaders(int &shaderProgram, const char *vertPath, const char *fragPath);
 template <is_3d_context Ctx>
 void reload3d(Ctx &ctx, const char *vertPath, const char *fragPath);
 
@@ -41,8 +40,7 @@ static void checkProgramError(const int program) {
   }
 }
 
-void reloadShaders(int &shaderProgram, const char *vertPath,
-                   const char *fragPath) {
+void reloadShaders(int &shaderProgram, const char *vertPath, const char *fragPath) {
   glDeleteProgram(shaderProgram); // 0 silently ignored
 
   int  success;

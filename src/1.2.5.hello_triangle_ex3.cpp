@@ -58,20 +58,19 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
-                                        "LearnOpenGL", nullptr, nullptr);
+  GLFWwindow *window =
+      glfwCreateWindow(windowWidth, windowHeight, "LearnOpenGL", nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();
     exit(1);
   }
   glfwMakeContextCurrent(window);
-  glfwSetFramebufferSizeCallback(window,
-                                 [](GLFWwindow *window, int width, int height) {
-                                   glViewport(0, 0, width, height);
-                                   windowWidth  = width;
-                                   windowHeight = height;
-                                 });
+  glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width, int height) {
+    glViewport(0, 0, width, height);
+    windowWidth  = width;
+    windowHeight = height;
+  });
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::cerr << "failed to initialize GLAD" << std::endl;
@@ -84,8 +83,7 @@ int main() {
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    std::cerr << "ERROR:SHADER::VERTEX::COMPILATION_FAILED\n"
-              << infoLog << std::endl;
+    std::cerr << "ERROR:SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
   }
 
   unsigned int shaderProgram[2] = {}, vbo[2] = {}, vao[2] = {};
@@ -101,8 +99,7 @@ int main() {
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if (!success) {
       glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-      std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n"
-                << infoLog << std::endl;
+      std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
     shaderProgram[i] = glCreateProgram();
     glAttachShader(shaderProgram[i], vertexShader);
@@ -112,18 +109,15 @@ int main() {
     glGetProgramiv(shaderProgram[i], GL_LINK_STATUS, &success);
     if (!success) {
       glGetProgramInfoLog(shaderProgram[i], 512, NULL, infoLog);
-      std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n"
-                << infoLog << std::endl;
+      std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[i]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) / 2, &vertices[i * 3],
-                 GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) / 2, &vertices[i * 3], GL_STATIC_DRAW);
 
     glBindVertexArray(vao[i]);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-                          (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0); // unbind

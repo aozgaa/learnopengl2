@@ -75,38 +75,37 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
-                                        "LearnOpenGL", nullptr, nullptr);
+  GLFWwindow *window =
+      glfwCreateWindow(windowWidth, windowHeight, "LearnOpenGL", nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();
     exit(1);
   }
   glfwMakeContextCurrent(window);
-  glfwSetFramebufferSizeCallback(window,
-                                 [](GLFWwindow *window, int width, int height) {
-                                   glViewport(0, 0, width, height);
-                                   windowWidth  = width;
-                                   windowHeight = height;
-                                 });
+  glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width, int height) {
+    glViewport(0, 0, width, height);
+    windowWidth  = width;
+    windowHeight = height;
+  });
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glfwSetWindowFocusCallback(window, [](GLFWwindow *window, int focused) {
     gainedFocus = focused == GLFW_TRUE;
   });
-  glfwSetCursorPosCallback(
-      window, [](GLFWwindow *window, double dx, double dy) {
-        glfwSetCursorPos(window, 0, 0); // reset to maintain precision
+  glfwSetCursorPosCallback(window, [](GLFWwindow *window, double dx, double dy) {
+    glfwSetCursorPos(window, 0, 0); // reset to maintain precision
 
-        if (gainedFocus) {
-          gainedFocus = false;
-          return; // ignore movement on first frame
-        }
+    if (gainedFocus) {
+      gainedFocus = false;
+      return; // ignore movement on first frame
+    }
 
-        camera.handleMouse(dx, -dy); // (0,0) is top-left corner
-      });
-  glfwSetScrollCallback(window, [](GLFWwindow *window, double xoff,
-                                   double yoff) { camera.handleScroll(yoff); });
+    camera.handleMouse(dx, -dy); // (0,0) is top-left corner
+  });
+  glfwSetScrollCallback(window, [](GLFWwindow *window, double xoff, double yoff) {
+    camera.handleScroll(yoff);
+  });
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::cerr << "failed to initialize GLAD" << std::endl;
@@ -121,8 +120,7 @@ int main() {
   light = initLight(cube);
 
   while (!glfwWindowShouldClose(window)) {
-    if (fileChanged(cubeVertexShaderPath) ||
-        fileChanged(cubeFragmentShaderPath)) {
+    if (fileChanged(cubeVertexShaderPath) || fileChanged(cubeFragmentShaderPath)) {
       reload3d(cube, cubeVertexShaderPath, cubeFragmentShaderPath);
     }
 
@@ -137,21 +135,19 @@ int main() {
 
     glm::mat4 view = camera.view();
 
-    projection = glm::perspective(camera.fov, windowWidth / (float)windowHeight,
-                                  0.1f, 100.0f);
+    projection =
+        glm::perspective(camera.fov, windowWidth / (float)windowHeight, 0.1f, 100.0f);
 
     model = glm::mat4(1.0f);
 
-    auto lightColor =
-        glm::vec3(1.0f, 1.0f, float(0.5f + 0.5 * sin(glfwGetTime())));
-    auto lightPos = glm::vec3(0.5f, 1.0f, 0.8f);
+    auto lightColor = glm::vec3(1.0f, 1.0f, float(0.5f + 0.5 * sin(glfwGetTime())));
+    auto lightPos   = glm::vec3(0.5f, 1.0f, 0.8f);
 
     glUseProgram(cube.program);
 
     glBindVertexArray(cube.vao);
     glUniformMatrix4fv(cube.viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(cube.projectionLoc, 1, GL_FALSE,
-                       glm::value_ptr(projection));
+    glUniformMatrix4fv(cube.projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(cube.modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniform3f(cube.objectColorLoc, 1.0f, 0.5f, 0.31f);
     glUniform3f(cube.lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
@@ -163,8 +159,7 @@ int main() {
     glUseProgram(light.program);
     glBindVertexArray(light.vao);
     glUniformMatrix4fv(light.viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(light.projectionLoc, 1, GL_FALSE,
-                       glm::value_ptr(projection));
+    glUniformMatrix4fv(light.projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(light.modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniform3f(light.lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
     glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
@@ -208,8 +203,7 @@ CubeContext initCube() {
   unsigned int vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices,
-               GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
   unsigned int vao = 0;
   glGenVertexArrays(1, &vao);
@@ -218,11 +212,9 @@ CubeContext initCube() {
   unsigned int ebo = 0;
   glGenBuffers(1, &ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices,
-               GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-                        CUBE_VERTEX_NELTS * sizeof(float),
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, CUBE_VERTEX_NELTS * sizeof(float),
                         (void *)(0 * sizeof(float))); // position
   glEnableVertexAttribArray(0);
 
@@ -251,11 +243,9 @@ LightContext initLight(const CubeContext &cube) {
   unsigned int ebo = 0;
   glGenBuffers(1, &ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices,
-               GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-                        CUBE_VERTEX_NELTS * sizeof(float),
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, CUBE_VERTEX_NELTS * sizeof(float),
                         (void *)(0 * sizeof(float))); // position
   glEnableVertexAttribArray(0);
 

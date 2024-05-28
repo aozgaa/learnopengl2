@@ -6,10 +6,9 @@
 
 #define VARNAME(var) (#var)
 
-void GLAPIENTRY glDebugMessageCb(GLenum source, GLenum type, GLuint id,
-                                       GLenum severity, GLsizei length,
-                                       const GLchar *message,
-                                       const void   *userParam) {
+void GLAPIENTRY glDebugMessageCb(GLenum source, GLenum type, GLuint id, GLenum severity,
+                                 GLsizei length, const GLchar *message,
+                                 const void *userParam) {
   const char *type_cstr =
       type == GL_DEBUG_TYPE_ERROR ? VARNAME(GL_DEBUG_TYPE_ERROR)
       : type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR
@@ -37,8 +36,8 @@ void GLAPIENTRY glDebugMessageCb(GLenum source, GLenum type, GLuint id,
           "GL CALLBACK: %s type = 0x%x (%s), "
           "severity = 0x%x (%s), "
           "message = %s\n",
-          (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type,
-          type_cstr, severity, severity_cstr, message);
+          (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, type_cstr,
+          severity, severity_cstr, message);
 }
 
 #undef VARNAME

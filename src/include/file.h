@@ -29,8 +29,7 @@ std::string readFile(const std::string &path) {
 }
 
 bool fileChanged(const std::string &path) {
-  static std::unordered_map<std::string, std::filesystem::file_time_type>
-      mtimes;
+  static std::unordered_map<std::string, std::filesystem::file_time_type> mtimes;
 
   auto mtime = std::filesystem::last_write_time(path);
   if (mtime > mtimes[path]) {
@@ -40,8 +39,8 @@ bool fileChanged(const std::string &path) {
   return false;
 }
 
-constexpr std::string currentBasename(
-    std::source_location location = std::source_location::current()) {
+constexpr std::string
+currentBasename(std::source_location location = std::source_location::current()) {
   auto file_name  = location.file_name();
   auto base_start = file_name;
   auto it         = file_name;
