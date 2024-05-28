@@ -88,6 +88,9 @@ set(LEARNOPENGL2_APPS
     1.7.8.camera_ex2
 
     2.1.1.color_container
+
+    2.2.1.basic_lighting_diffuse
+    2.2.2.basic_lighting_phong_world
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})

@@ -170,7 +170,7 @@ int main() {
 
     float time = (float)glfwGetTime();
     dt         = time - frameStart;
-    frameStart = dt;
+    frameStart = time;
 
     processInput(window);
 

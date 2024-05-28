@@ -167,7 +167,7 @@ int main() {
 
     float time = (float)glfwGetTime();
     dt         = time - frameStart;
-    frameStart = dt;
+    frameStart = time;
 
     processInput(window);
     camera.front    = glm::vec3(sin(camera.yaw) * cos(camera.pitch), sin(camera.pitch),

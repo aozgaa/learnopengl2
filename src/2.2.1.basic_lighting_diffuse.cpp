@@ -25,6 +25,7 @@ struct CubeContext {
   GLint        modelLoc;
   GLint        viewLoc;
   GLint        projectionLoc;
+  GLint        wsLightPosLocLoc;
   GLint        objectColorLoc;
   GLint        lightColorLoc;
 };
@@ -46,8 +47,8 @@ LightContext initLight(const CubeContext &cube);
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
-const char *cubeVertexShaderPath    = "src/2.1.1.cube.vert";
-const char *cubeFragmentShaderPath  = "src/2.1.1.cube.frag";
+const char *cubeVertexShaderPath    = "src/2.2.1.basic_lighting_diffuse.vert";
+const char *cubeFragmentShaderPath  = "src/2.2.1.basic_lighting_diffuse.frag";
 const char *lightVertexShaderPath   = "src/2.1.light_source.vert";
 const char *lightFragmentShaderPath = "src/2.1.light_source.frag";
 
@@ -139,6 +140,7 @@ int main() {
         glm::perspective(camera.fov, windowWidth / (float)windowHeight, 0.1f, 100.0f);
 
     model = glm::mat4(1.0f);
+    model = glm::rotate(model, time, glm::vec3(1.0, 0.3f, 0.5f));
 
     auto lightColor =
         glm::vec3(0.5f) + glm::vec3(cos(time), cos(time * 2.0), cos(time * 3.0));
@@ -152,11 +154,13 @@ int main() {
     glUniformMatrix4fv(cube.modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniform3f(cube.objectColorLoc, 1.0f, 0.5f, 0.31f);
     glUniform3f(cube.lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
+    glUniform3f(cube.wsLightPosLocLoc, lightPos.x, lightPos.y, lightPos.z);
+
     glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
 
     model = glm::mat4(1.0f);
     model = glm::translate(model, lightPos);
-    model = glm::scale(model, glm::vec3(0.2f));
+    model = glm::scale(model, glm::vec3(0.1f));
     glUseProgram(light.program);
     glBindVertexArray(light.vao);
     glUniformMatrix4fv(light.viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -198,8 +202,9 @@ CubeContext initCube() {
 
   reload3d(res, cubeVertexShaderPath, cubeFragmentShaderPath);
 
-  res.objectColorLoc = glGetUniformLocation(res.program, "object_color");
-  res.lightColorLoc  = glGetUniformLocation(res.program, "light_color");
+  res.objectColorLoc   = glGetUniformLocation(res.program, "object_color");
+  res.lightColorLoc    = glGetUniformLocation(res.program, "light_color");
+  res.wsLightPosLocLoc = glGetUniformLocation(res.program, "ws_light_pos");
 
   unsigned int vbo = 0;
   glGenBuffers(1, &vbo);
@@ -218,6 +223,9 @@ CubeContext initCube() {
   glVertexAttribPointer(0, CUBE_POS_SIZE, GL_FLOAT, GL_FALSE, sizeof(CubeVertex),
                         (void *)(CUBE_POS_OFF));
   glEnableVertexAttribArray(0);
+  glVertexAttribPointer(1, CUBE_NORMAL_SIZE, GL_FLOAT, GL_FALSE, sizeof(CubeVertex),
+                        (void *)(CUBE_NORMAL_OFF));
+  glEnableVertexAttribArray(1);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0); // unbind
   glBindVertexArray(0);             // unbind

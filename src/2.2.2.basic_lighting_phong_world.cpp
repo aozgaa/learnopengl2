@@ -25,6 +25,8 @@ struct CubeContext {
   GLint        modelLoc;
   GLint        viewLoc;
   GLint        projectionLoc;
+  GLint        wsCameraPosLoc;
+  GLint        wsLightPosLoc;
   GLint        objectColorLoc;
   GLint        lightColorLoc;
 };
@@ -46,8 +48,8 @@ LightContext initLight(const CubeContext &cube);
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
-const char *cubeVertexShaderPath    = "src/2.1.1.cube.vert";
-const char *cubeFragmentShaderPath  = "src/2.1.1.cube.frag";
+const char *cubeVertexShaderPath    = "src/2.2.2.basic_lighting_phong_world.vert";
+const char *cubeFragmentShaderPath  = "src/2.2.2.basic_lighting_phong_world.frag";
 const char *lightVertexShaderPath   = "src/2.1.light_source.vert";
 const char *lightFragmentShaderPath = "src/2.1.light_source.frag";
 
@@ -60,6 +62,8 @@ glm::mat4 model      = glm::mat4(1.0f);
 glm::mat4 view       = glm::mat4(1.0f);
 glm::mat4 projection = glm::mat4(1.0f);
 Camera    camera{};
+
+auto lightPos = glm::vec3(1.0f, 0.4f, 3.0f);
 
 float frameStart = 0.0f;
 float dt         = 0.0f; // time spent in last frame
@@ -139,10 +143,11 @@ int main() {
         glm::perspective(camera.fov, windowWidth / (float)windowHeight, 0.1f, 100.0f);
 
     model = glm::mat4(1.0f);
+    // model = glm::rotate(model, time, glm::vec3(1.0, 0.3f, 0.5f));
 
-    auto lightColor =
-        glm::vec3(0.5f) + glm::vec3(cos(time), cos(time * 2.0), cos(time * 3.0));
-    auto lightPos = glm::vec3(0.5f, 1.0f, 0.8f);
+    auto lightColor = glm::vec3(1.0f);
+    // // uncomment for light to fly around cube
+    // lightPos = glm::vec3(cos(time * 0.6), 2.0 * sin(time), sin(time * 0.6));
 
     glUseProgram(cube.program);
 
@@ -150,13 +155,16 @@ int main() {
     glUniformMatrix4fv(cube.viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(cube.projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(cube.modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    glUniform3f(cube.objectColorLoc, 1.0f, 0.5f, 0.31f);
+    glUniform3f(cube.objectColorLoc, 1.0f, 0.5f, 0.31f); // coral
     glUniform3f(cube.lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
+    glUniform3f(cube.wsCameraPosLoc, camera.pos.x, camera.pos.y, camera.pos.z);
+    glUniform3f(cube.wsLightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+
     glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
 
     model = glm::mat4(1.0f);
     model = glm::translate(model, lightPos);
-    model = glm::scale(model, glm::vec3(0.2f));
+    model = glm::scale(model, glm::vec3(0.1f));
     glUseProgram(light.program);
     glBindVertexArray(light.vao);
     glUniformMatrix4fv(light.viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -190,6 +198,22 @@ void processInput(GLFWwindow *window) {
     reload3d(cube, cubeVertexShaderPath, cubeFragmentShaderPath);
     reload3d(light, lightVertexShaderPath, lightFragmentShaderPath);
   }
+
+  // fixme: debug: move cube
+  const float speed = 2.0f * dt;
+  if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+    lightPos.z -= speed;
+  if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+    lightPos.z += speed;
+  if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+    lightPos.x -= speed;
+  if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+    lightPos.x += speed;
+  if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
+    lightPos.y += speed;
+  if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+    lightPos.y -= speed;
+
   camera.pollKeyboard(window, dt);
 }
 
@@ -200,6 +224,8 @@ CubeContext initCube() {
 
   res.objectColorLoc = glGetUniformLocation(res.program, "object_color");
   res.lightColorLoc  = glGetUniformLocation(res.program, "light_color");
+  res.wsCameraPosLoc = glGetUniformLocation(res.program, "ws_camera_pos");
+  res.wsLightPosLoc  = glGetUniformLocation(res.program, "ws_light_pos");
 
   unsigned int vbo = 0;
   glGenBuffers(1, &vbo);
@@ -218,6 +244,9 @@ CubeContext initCube() {
   glVertexAttribPointer(0, CUBE_POS_SIZE, GL_FLOAT, GL_FALSE, sizeof(CubeVertex),
                         (void *)(CUBE_POS_OFF));
   glEnableVertexAttribArray(0);
+  glVertexAttribPointer(1, CUBE_NORMAL_SIZE, GL_FLOAT, GL_FALSE, sizeof(CubeVertex),
+                        (void *)(CUBE_NORMAL_OFF));
+  glEnableVertexAttribArray(1);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0); // unbind
   glBindVertexArray(0);             // unbind

@@ -42,7 +42,7 @@ struct Camera {
   }
 
   void pollKeyboard(GLFWwindow *window, float dt) {
-    const float speed = 0.1f * dt;
+    const float speed = 2.0f * dt;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
       pos += speed * m_z;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
