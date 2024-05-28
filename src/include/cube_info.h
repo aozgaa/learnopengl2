@@ -17,35 +17,46 @@
 // | /      | /
 // |/       |/
 // 0--------1
-const unsigned int CUBE_VERTEX_NELTS = 5;
-float              cubeVertices[]    = {
-  // pos               texture coords
-  -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, // 0 -- front
-  0.5f,  -0.5f, 0.5f,  1.0f, 0.0f, // 1
-  0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // 2
-  -0.5f, 0.5f,  0.5f,  0.0f, 1.0f, // 3
-  0.5f,  -0.5f, -0.5f, 0.0f, 0.0f, // 5 -- back
-  -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, // 4
-  -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f, // 7
-  0.5f,  0.5f,  -0.5f, 0.0f, 1.0f, // 6
-  0.5f,  -0.5f, 0.5f,  0.0f, 0.0f, // 1 -- right
-  0.5f,  -0.5f, -0.5f, 1.0f, 0.0f, // 5
-  0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, // 6
-  0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // 2
-  -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 4 -- left
-  -0.5f, -0.5f, 0.5f,  1.0f, 0.0f, // 0
-  -0.5f, 0.5f,  0.5f,  1.0f, 1.0f, // 3
-  -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, // 7
-  -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 4 -- bottom
-  0.5f,  -0.5f, -0.5f, 1.0f, 0.0f, // 5
-  0.5f,  -0.5f, 0.5f,  1.0f, 1.0f, // 1
-  -0.5f, -0.5f, 0.5f,  0.0f, 1.0f, // 0
-  -0.5f, 0.5f,  0.5f,  0.0f, 0.0f, // 3 -- top
-  0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // 2
-  0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, // 6
-  -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, // 7
+
+struct CubeVertex {
+  float pos[3];
+  float tex[2];
 };
-static_assert(CUBE_VERTEX_NELTS * 6 * 4 == std::size(cubeVertices));
+
+// fixme: remove these?
+const unsigned int CUBE_VERTEX_NELTS = sizeof(CubeVertex) / sizeof(float);
+const GLint        CUBE_POS_SIZE     = std::size(CubeVertex{}.pos);
+const GLint        CUBE_TEX_SIZE     = std::size(CubeVertex{}.tex);
+const size_t       CUBE_POS_OFF      = offsetof(CubeVertex, pos);
+const size_t       CUBE_TEX_OFF      = offsetof(CubeVertex, tex);
+
+CubeVertex cubeVertices[24] = {
+  // pos                    tex coords
+  { { -0.5f, -0.5f, 0.5f }, { 0.0f, 0.0f }}, // 0: front
+  {  { 0.5f, -0.5f, 0.5f }, { 1.0f, 0.0f }}, // 1
+  {   { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f }}, // 2
+  {  { -0.5f, 0.5f, 0.5f }, { 0.0f, 1.0f }}, // 3
+  { { 0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }}, // 5: back
+  {{ -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f }}, // 4
+  { { -0.5f, 0.5f, -0.5f }, { 1.0f, 1.0f }}, // 7
+  {  { 0.5f, 0.5f, -0.5f }, { 0.0f, 1.0f }}, // 6
+  {  { 0.5f, -0.5f, 0.5f }, { 0.0f, 0.0f }}, // 1: right
+  { { 0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f }}, // 5
+  {  { 0.5f, 0.5f, -0.5f }, { 1.0f, 1.0f }}, // 6
+  {   { 0.5f, 0.5f, 0.5f }, { 0.0f, 1.0f }}, // 2
+  {{ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }}, // 4: left
+  { { -0.5f, -0.5f, 0.5f }, { 1.0f, 0.0f }}, // 0
+  {  { -0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f }}, // 3
+  { { -0.5f, 0.5f, -0.5f }, { 0.0f, 1.0f }}, // 7
+  {{ -0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f }}, // 4: bottom
+  { { 0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f }}, // 5
+  {  { 0.5f, -0.5f, 0.5f }, { 1.0f, 1.0f }}, // 1
+  { { -0.5f, -0.5f, 0.5f }, { 0.0f, 1.0f }}, // 0
+  {  { -0.5f, 0.5f, 0.5f }, { 0.0f, 0.0f }}, // 3: top
+  {   { 0.5f, 0.5f, 0.5f }, { 1.0f, 0.0f }}, // 2
+  {  { 0.5f, 0.5f, -0.5f }, { 1.0f, 1.0f }}, // 6
+  { { -0.5f, 0.5f, -0.5f }, { 0.0f, 1.0f }}, // 7
+};
 
 unsigned int cubeIndices[] = {
   0,  1,  2,  // front
