@@ -22,6 +22,30 @@
                 }
             },
             "binaryDir": "build"
+        },
+        {
+            "name": "vcpkg-clang-win",
+            "inherits": "vcpkg",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "VCPKG_APPLOCAL_DEPS": {
+                    "type": "BOOL",
+                    "value": "OFF"
+                },
+                "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": {
+                    "value": "${sourceDir}/cmake/WindowsToolchain/Windows.Clang.toolchain.cmake",
+                    "type": "FILEPATH"
+                },
+                "CMAKE_C_COMPILER_FRONTEND_VARIANT": {
+                    "value": "MSVC",
+                    "type": "STRING"
+                },
+                "CMAKE_CXX_COMPILER_FRONTEND_VARIANT": {
+                    "value": "MSVC",
+                    "type": "STRING"
+                }
+            },
+            "binaryDir": "build"
         }
     ]
 }

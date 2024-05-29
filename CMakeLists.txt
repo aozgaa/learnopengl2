@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.27)
 
 project(hello_opengl)
 
+add_compile_definitions(
+    UNICODE
+    _UNICODE
+)
+
 add_definitions(-D_CRT_SECURE_NO_WARNINGS) # ignore windows deprecated functions
 set(CMAKE_CXX_STANDARD 23)
 

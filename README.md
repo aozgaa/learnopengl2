@@ -20,8 +20,11 @@ cmake -S . -B build --preset vcpkg-win -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 cmake --build build
 ```
 
-As a convenience, presets called `vcpkg` and `vcpkg-clang` are provided which obtains and builds dependencies on windows using vcpkg.
-In order to use one, `VCPKG_ROOT` needs to be set.
+As a convenience, presets called `vcpkg` and `vcpkg-clang-win` are provided which obtain and builds dependencies (on windows) using vcpkg.
+In order to use one, `vcpkg` needs to be
+[installed](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started?pivots=shell-bash#1---set-up-vcpkg)
+and `VCPKG_ROOT` needs to be set.
+
 One way to do this is to create a `CMakeUserPresets.json` file with contents analogous to this:
 ```
 {
