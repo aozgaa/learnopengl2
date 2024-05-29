@@ -91,6 +91,7 @@ set(LEARNOPENGL2_APPS
 
     2.2.1.basic_lighting_diffuse
     2.2.2.basic_lighting_phong_world
+    2.2.3.basic_lighting_phong_view
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
