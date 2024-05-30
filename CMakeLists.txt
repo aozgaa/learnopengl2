@@ -97,6 +97,11 @@ set(LEARNOPENGL2_APPS
     2.2.3.basic_lighting_ex1
     2.2.4.basic_lighting_ex2_phong_view
     2.2.5.basic_lighting_ex3_gouraud
+
+    2.3.1.materials
+    2.3.2.materials_light
+    # 2.3.3.materials_ex1 # implemented in previous
+    # 2.3.4.materials_ex2 # implemented in previous
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
