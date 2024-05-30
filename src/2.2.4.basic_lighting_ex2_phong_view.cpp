@@ -49,8 +49,8 @@ LightContext initLight(const CubeContext &cube);
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
-const char *cubeVertexShaderPath    = "src/2.2.3.basic_lighting_phong_view.vert";
-const char *cubeFragmentShaderPath  = "src/2.2.3.basic_lighting_phong_view.frag";
+const char *cubeVertexShaderPath    = "src/2.2.4.basic_lighting_ex2_phong_view.vert";
+const char *cubeFragmentShaderPath  = "src/2.2.4.basic_lighting_ex2_phong_view.frag";
 const char *lightVertexShaderPath   = "src/2.1.light_source.vert";
 const char *lightFragmentShaderPath = "src/2.1.light_source.frag";
 

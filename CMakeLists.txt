@@ -9,6 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 
 find_package(Stb REQUIRED)
 
@@ -33,6 +34,7 @@ function(add_executable_learnopengl2 name)
     target_link_libraries(${name} PRIVATE glfw)
     target_link_libraries(${name} PRIVATE glad::glad)
     target_link_libraries(${name} PRIVATE glm::glm-header-only)
+    target_link_libraries(${name} PRIVATE imgui::imgui)
     target_include_directories(${name} PRIVATE src/include)
     target_include_directories(${name} PRIVATE ${Stb_INCLUDE_DIR})
 
@@ -92,7 +94,9 @@ set(LEARNOPENGL2_APPS
 
     2.2.1.basic_lighting_diffuse
     2.2.2.basic_lighting_phong_world
-    2.2.3.basic_lighting_phong_view
+    2.2.3.basic_lighting_ex1
+    2.2.4.basic_lighting_ex2_phong_view
+    2.2.5.basic_lighting_ex3_gouraud
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
