@@ -6,9 +6,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-// #include "camera.h"
 #include "camera.h"
 #include "cube_info.h"
+#include "file.h"
 #include "image.h"
 #include "shader_program.h"
 

@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+#include "file.h"
+
 void processInput(GLFWwindow *window);
 
 unsigned int windowWidth  = 800;
@@ -58,8 +60,8 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow *window =
-      glfwCreateWindow(windowWidth, windowHeight, "LearnOpenGL", nullptr, nullptr);
+  GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
+                                        currentBasename().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();

@@ -7,6 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "cube_info.h"
+#include "file.h"
 #include "image.h"
 #include "shader_program.h"
 

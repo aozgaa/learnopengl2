@@ -8,6 +8,7 @@
 
 #include "camera.h"
 #include "cube_info.h"
+#include "file.h"
 #include "gl_debug.h"
 #include "image.h"
 #include "shader_program.h"
@@ -79,8 +80,8 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow *window =
-      glfwCreateWindow(windowWidth, windowHeight, "LearnOpenGL", nullptr, nullptr);
+  GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
+                                        currentBasename().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();
