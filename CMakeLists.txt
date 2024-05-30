@@ -4,6 +4,7 @@ project(hello_opengl)
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS) # ignore windows deprecated functions
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)

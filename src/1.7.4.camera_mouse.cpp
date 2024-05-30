@@ -16,7 +16,7 @@
 #include <string>
 
 struct Camera {
-  static const glm::vec3 up;
+  static const glm::vec3 UP;
 
   glm::vec3 camPos;
   float     pitch;
@@ -26,7 +26,7 @@ struct Camera {
   glm::vec3 camUp;    // derived
 };
 
-glm::vec3 const Camera::up(0.0f, 1.0f, 0.0f);
+glm::vec3 const Camera::UP(0.0f, 1.0f, 0.0f);
 
 void processInput(GLFWwindow *window);
 void resetUniforms(int shaderProgram);
@@ -173,7 +173,7 @@ int main() {
     processInput(window);
     camera.front    = glm::vec3(sin(camera.yaw) * cos(camera.pitch), sin(camera.pitch),
                                 -cos(camera.yaw) * cos(camera.pitch));
-    camera.camRight = glm::normalize(glm::cross(camera.front, Camera::up));
+    camera.camRight = glm::normalize(glm::cross(camera.front, Camera::UP));
     camera.camUp    = glm::cross(camera.camRight, camera.front); // already normalized
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -186,7 +186,7 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, smileyTexture);
 
     glm::mat4 view;
-    view = glm::lookAt(camera.camPos, camera.camPos + camera.front, Camera::up);
+    view = glm::lookAt(camera.camPos, camera.camPos + camera.front, Camera::UP);
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
     projection = glm::perspective(glm::pi<float>() * 0.25f,
