@@ -61,8 +61,8 @@ LightContext initLight(const CubeContext &cube);
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
-const char *cubeVertexShaderPath    = "src/2.3.2.materials_light.vert";
-const char *cubeFragmentShaderPath  = "src/2.3.2.materials_light.frag";
+const char *cubeVertexShaderPath    = "src/2.3.2.materials_light_properties_cube.vert";
+const char *cubeFragmentShaderPath  = "src/2.3.2.materials_light_properties_cube.frag";
 const char *lightVertexShaderPath   = "src/2.1.light_source.vert";
 const char *lightFragmentShaderPath = "src/2.1.light_source.frag";
 
@@ -155,8 +155,7 @@ int main() {
     projection =
         glm::perspective(camera.fov, windowWidth / (float)windowHeight, 0.1f, 100.0f);
 
-    auto lightColor =
-        0.5f + 0.5f * glm::vec3(cos(1.0 * time), cos(0.7 * time), cos(2.0 * time));
+    auto lightColor   = glm::vec3(1.0f);
     auto viewLightPos = view * glm::vec4(lightPos, 1.0f);
 
     glUseProgram(cube.program);

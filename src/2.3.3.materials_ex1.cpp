@@ -17,6 +17,13 @@
 #include <array>
 #include <iostream>
 
+struct LightLocs {
+  GLint v_pos;
+  GLint ambient;
+  GLint diffuse;
+  GLint specular;
+};
+
 struct MaterialLocs {
   GLint ambient;
   GLint diffuse;
@@ -34,8 +41,7 @@ struct CubeContext {
   GLint        projectionLoc;
   GLint        wsCameraPosLoc;
   MaterialLocs materialLocs;
-  GLint        vLightPosLoc;
-  GLint        lightColorLoc;
+  LightLocs    lightLocs;
 };
 
 struct LightContext {
@@ -55,8 +61,8 @@ LightContext initLight(const CubeContext &cube);
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
-const char *cubeVertexShaderPath    = "src/2.3.1.materials.vert";
-const char *cubeFragmentShaderPath  = "src/2.3.1.materials.frag";
+const char *cubeVertexShaderPath    = "src/2.3.2.materials_light_properties_cube.vert";
+const char *cubeFragmentShaderPath  = "src/2.3.2.materials_light_properties_cube.frag";
 const char *lightVertexShaderPath   = "src/2.1.light_source.vert";
 const char *lightFragmentShaderPath = "src/2.1.light_source.frag";
 
@@ -149,7 +155,8 @@ int main() {
     projection =
         glm::perspective(camera.fov, windowWidth / (float)windowHeight, 0.1f, 100.0f);
 
-    auto lightColor   = glm::vec3(1.0f);
+    auto lightColor =
+        0.5f + 0.5f * glm::vec3(cos(1.0 * time), cos(0.7 * time), cos(2.0 * time));
     auto viewLightPos = view * glm::vec4(lightPos, 1.0f);
 
     glUseProgram(cube.program);
@@ -157,9 +164,14 @@ int main() {
     glBindVertexArray(cube.vao);
     glUniformMatrix4fv(cube.viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(cube.projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniform3f(cube.lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
     glUniform3f(cube.wsCameraPosLoc, camera.pos.x, camera.pos.y, camera.pos.z);
-    glUniform3f(cube.vLightPosLoc, viewLightPos.x, viewLightPos.y, viewLightPos.z);
+    glUniform3f(cube.lightLocs.v_pos, viewLightPos.x, viewLightPos.y, viewLightPos.z);
+    glUniform3f(cube.lightLocs.ambient, 0.2f * lightColor.x, 0.2f * lightColor.y,
+                0.2f * lightColor.z);
+    glUniform3f(cube.lightLocs.diffuse, 0.5f * lightColor.x, 0.5f * lightColor.y,
+                0.5f * lightColor.z);
+    glUniform3f(cube.lightLocs.specular, 1.0f * lightColor.x, 1.0f * lightColor.y,
+                1.0f * lightColor.z);
 
     for (int i = 0; i < std::size(materials); ++i) {
       const auto &material = materials[i];
@@ -239,13 +251,15 @@ CubeContext initCube() {
 
   reload3d(res, cubeVertexShaderPath, cubeFragmentShaderPath);
 
-  res.lightColorLoc          = glGetUniformLocation(res.program, "light_color");
   res.wsCameraPosLoc         = glGetUniformLocation(res.program, "ws_camera_pos");
-  res.vLightPosLoc           = glGetUniformLocation(res.program, "v_light_pos");
   res.materialLocs.ambient   = glGetUniformLocation(res.program, "material.ambient");
   res.materialLocs.diffuse   = glGetUniformLocation(res.program, "material.diffuse");
   res.materialLocs.specular  = glGetUniformLocation(res.program, "material.specular");
   res.materialLocs.shininess = glGetUniformLocation(res.program, "material.shininess");
+  res.lightLocs.v_pos        = glGetUniformLocation(res.program, "light.v_pos");
+  res.lightLocs.ambient      = glGetUniformLocation(res.program, "light.ambient");
+  res.lightLocs.diffuse      = glGetUniformLocation(res.program, "light.diffuse");
+  res.lightLocs.specular     = glGetUniformLocation(res.program, "light.specular");
 
   unsigned int vbo = 0;
   glGenBuffers(1, &vbo);
