@@ -81,6 +81,5 @@ When `clang` is used, `build/compile_commands.json` will be populated with comma
 
 # TODO
 - use gl types consistently instead of `int`, `unsigned int`, etc
-- fix camera so it starts pointing towards negative z-axis:
-  + with default yaw of 0.0?
-  + with yaw 0.0 pointing towards x-axis and default yaw of -pi/2?
+- remove reload3d
+- refactor apps to get uniform locations correctly as described 087b97c37cb1eb88cc6

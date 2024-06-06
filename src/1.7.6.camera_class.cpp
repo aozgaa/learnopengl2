@@ -95,7 +95,7 @@ int main() {
 
   glEnable(GL_DEPTH_TEST);
 
-  reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
+  reloadProgram(shaderProgram, vertexShaderPath, fragmentShaderPath);
 
   unsigned int vbo = 0;
   glGenBuffers(1, &vbo);
@@ -144,7 +144,7 @@ int main() {
 
   while (!glfwWindowShouldClose(window)) {
     if (fileChanged(vertexShaderPath) || fileChanged(fragmentShaderPath)) {
-      reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
+      reloadProgram(shaderProgram, vertexShaderPath, fragmentShaderPath);
       resetUniforms(shaderProgram);
     }
 
@@ -200,7 +200,7 @@ void processInput(GLFWwindow *window) {
     glfwSetWindowShouldClose(window, true);
   }
   if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-    reloadShaders(shaderProgram, vertexShaderPath, fragmentShaderPath);
+    reloadProgram(shaderProgram, vertexShaderPath, fragmentShaderPath);
     resetUniforms(shaderProgram);
   }
   camera.pollKeyboard(window, dt);
