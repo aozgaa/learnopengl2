@@ -149,6 +149,10 @@ int main() {
   while (!glfwWindowShouldClose(window)) {
     if (fileChanged(cubeVertexShaderPath) || fileChanged(cubeFragmentShaderPath)) {
       reload3d(cube, cubeVertexShaderPath, cubeFragmentShaderPath);
+
+      glUseProgram(cube.program);
+      glUniform1i(cube.materialLocs.diffuse, DIFFUSE_TEXTURE_UNIT);
+      glUseProgram(0);
     }
 
     float time = (float)glfwGetTime();
@@ -226,6 +230,9 @@ void processInput(GLFWwindow *window) {
   }
   if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
     reload3d(cube, cubeVertexShaderPath, cubeFragmentShaderPath);
+    glUseProgram(cube.program);
+    glUniform1i(cube.materialLocs.diffuse, DIFFUSE_TEXTURE_UNIT);
+    glUseProgram(0);
     reload3d(light, lightVertexShaderPath, lightFragmentShaderPath);
   }
 
@@ -252,16 +259,18 @@ CubeContext initCube() {
 
   reload3d(res, cubeVertexShaderPath, cubeFragmentShaderPath);
 
-  res.wsCameraPosLoc = glGetUniformLocation(res.program, "ws_camera_pos");
-
-  res.materialLocs.diffuse = glGetUniformLocation(res.program, "material.diffuse");
-  glUniform1i(res.materialLocs.diffuse, DIFFUSE_TEXTURE_UNIT);
+  res.wsCameraPosLoc         = glGetUniformLocation(res.program, "ws_camera_pos");
+  res.materialLocs.diffuse   = glGetUniformLocation(res.program, "material.diffuse");
   res.materialLocs.specular  = glGetUniformLocation(res.program, "material.specular");
   res.materialLocs.shininess = glGetUniformLocation(res.program, "material.shininess");
   res.lightLocs.v_pos        = glGetUniformLocation(res.program, "light.v_pos");
   res.lightLocs.ambient      = glGetUniformLocation(res.program, "light.ambient");
   res.lightLocs.diffuse      = glGetUniformLocation(res.program, "light.diffuse");
   res.lightLocs.specular     = glGetUniformLocation(res.program, "light.specular");
+
+  glUseProgram(res.program);
+  glUniform1i(res.materialLocs.diffuse, DIFFUSE_TEXTURE_UNIT);
+  glUseProgram(0);
 
   unsigned int vbo = 0;
   glGenBuffers(1, &vbo);
