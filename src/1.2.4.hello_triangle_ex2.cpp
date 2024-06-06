@@ -39,7 +39,7 @@ float vertices[][3] = {
 };
 
 int main() {
-  int  success;
+  int  success = 0;
   char infoLog[512];
 
   glfwInit();
@@ -60,8 +60,8 @@ int main() {
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
-    windowWidth  = width;
-    windowHeight = height;
+    windowWidth  = std::max(1, width);
+    windowHeight = std::max(1, height);
   });
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {

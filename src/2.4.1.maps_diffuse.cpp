@@ -17,7 +17,7 @@
 #include <array>
 #include <iostream>
 
-#define DIFFUSE_TEXTURE_UNIT 5
+constexpr int DIFFUSE_TEXTURE_UNIT = 5;
 
 struct LightLocs {
   GLint v_pos;
@@ -114,8 +114,9 @@ int main() {
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
-    windowWidth  = width;
-    windowHeight = height;
+    windowWidth  = std::max(1, width);
+    windowHeight = std::max(1, height);
+    ;
   });
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

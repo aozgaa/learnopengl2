@@ -41,19 +41,19 @@ bool fileChanged(const std::string &path) {
 
 constexpr std::string
 currentBasename(std::source_location location = std::source_location::current()) {
-  auto file_name  = location.file_name();
-  auto base_start = file_name;
-  auto it         = file_name;
-  auto end        = it;
-  for (auto it = file_name; *it != '\0'; ++it) {
+  auto fileName  = location.file_name();
+  auto baseStart = fileName;
+  auto it        = fileName;
+  auto end       = it;
+  for (auto it = fileName; *it != '\0'; ++it) {
     if (*it == '/' || *it == '\\') {
-      base_start = it + 1;
+      baseStart = it + 1; // NOLINT
     }
     if (*it == '.') {
       end = it;
     }
   }
-  std::string res(base_start, end);
+  std::string res(baseStart, end);
 
   return res;
 }

@@ -101,6 +101,7 @@ float dt         = 0.0f; // time spent in last frame
 
 bool gainedFocusThisFrame = true;
 bool imguiFocused         = true;
+bool showDemoWindow       = true;
 
 int main() {
   glfwInit();
@@ -121,7 +122,7 @@ int main() {
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
-    windowWidth  = width;
+    windowWidth  = std::max(1, width);
     windowHeight = height;
   });
 
@@ -188,15 +189,11 @@ int main() {
   // Setup Dear ImGui style
   ImGui::StyleColorsDark();
   // ImGui::StyleColorsLight();
-  const char *glsl_version = "#version 330 core"; // "#version 150"
-  ImGui_ImplOpenGL3_Init(glsl_version);
+  const char *glslVersion = "#version 330 core"; // "#version 150"
+  ImGui_ImplOpenGL3_Init(glslVersion);
 
   // Setup Platform/Renderer backends
   ImGui_ImplGlfw_InitForOpenGL(window, true);
-
-  bool   show_demo_window    = true;
-  bool   show_another_window = false;
-  ImVec4 clear_color         = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
   auto lightAmbient  = glm::vec3(0.2f);
   auto lightDiffuse  = glm::vec3(0.5f);
@@ -232,7 +229,7 @@ int main() {
       ImGui::SliderFloat("Y##Light", &lightPos.y, -5.0, 5.0, "%.4f");
       lightPos = glm::vec3(lightXZRad * cos(lightXZTheta), lightPos.y,
                            lightXZRad * sin(lightXZTheta));
-                           
+
       ImGui::ColorEdit4("ambient", glm::value_ptr(lightAmbient),
                         ImGuiColorEditFlags_Float);
       ImGui::ColorEdit4("diffuse", glm::value_ptr(lightDiffuse),
@@ -240,7 +237,7 @@ int main() {
       ImGui::ColorEdit4("specular", glm::value_ptr(lightSpecular),
                         ImGuiColorEditFlags_Float);
 
-      ImGui::ShowDemoWindow(&show_demo_window);
+      ImGui::ShowDemoWindow(&showDemoWindow);
 
       ImGui::Render();
     }

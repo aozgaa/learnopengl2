@@ -28,8 +28,8 @@ const char *fragmentShaderPath = "src/1.6.coordinates.frag";
 
 float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 
-#define WALL_TEXTURE_UNIT 3
-#define SMILEY_TEXTURE_UNIT 5
+constexpr int WALL_TEXTURE_UNIT   = 3;
+constexpr int SMILEY_TEXTURE_UNIT = 5;
 
 int   shaderProgram = 0;
 GLint wallLoc       = 0;
@@ -61,8 +61,8 @@ int main() {
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
-    windowWidth  = width;
-    windowHeight = height;
+    windowWidth  = std::max(1, width);
+    windowHeight = std::max(1, height);
   });
 
   glfwSetCursorPosCallback(window, [](GLFWwindow *window, double xpos, double ypos) {

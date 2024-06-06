@@ -84,6 +84,7 @@ float dt         = 0.0f; // time spent in last frame
 
 bool gainedFocusThisFrame = true;
 bool imguiFocused         = true;
+bool showDemoWindow       = true;
 
 int main() {
   glfwInit();
@@ -171,15 +172,11 @@ int main() {
   // Setup Dear ImGui style
   ImGui::StyleColorsDark();
   // ImGui::StyleColorsLight();
-  const char *glsl_version = "#version 330 core"; // "#version 150"
-  ImGui_ImplOpenGL3_Init(glsl_version);
+  const char *glslVersion = "#version 330 core"; // "#version 150"
+  ImGui_ImplOpenGL3_Init(glslVersion);
 
   // Setup Platform/Renderer backends
   ImGui_ImplGlfw_InitForOpenGL(window, true);
-
-  bool   show_demo_window    = true;
-  bool   show_another_window = false;
-  ImVec4 clear_color         = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
   while (!glfwWindowShouldClose(window)) {
     if (fileChanged(cubeVertexShaderPath) || fileChanged(cubeFragmentShaderPath)) {
@@ -212,7 +209,7 @@ int main() {
       lightPos = glm::vec3(lightXZRad * cos(lightXZTheta), lightPos.y,
                            lightXZRad * sin(lightXZTheta));
 
-      ImGui::ShowDemoWindow(&show_demo_window);
+      ImGui::ShowDemoWindow(&showDemoWindow);
 
       ImGui::Render();
     } else {

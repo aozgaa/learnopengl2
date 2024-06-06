@@ -10,7 +10,7 @@
 void reloadProgram(int &shaderProgram, const char *vertPath, const char *fragPath);
 
 static void checkShaderError(const int shader, const std::string &type) {
-  int  success;
+  int  success = 0;
   char infoLog[512];
   glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
   if (!success) {
@@ -21,7 +21,7 @@ static void checkShaderError(const int shader, const std::string &type) {
 }
 
 static void checkProgramError(const int program) {
-  int  success;
+  int  success = 0;
   char infoLog[512];
   glGetProgramiv(program, GL_LINK_STATUS, &success);
   if (!success) {
@@ -32,9 +32,6 @@ static void checkProgramError(const int program) {
 
 void reloadProgram(int &shaderProgram, const char *vertPath, const char *fragPath) {
   glDeleteProgram(shaderProgram); // 0 silently ignored
-
-  int  success;
-  char infoLog[512];
 
   unsigned int vertexShader       = glCreateShader(GL_VERTEX_SHADER);
   std::string  triangleVertSource = readFile(vertPath);

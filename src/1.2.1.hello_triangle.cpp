@@ -36,7 +36,7 @@ float vertices[] = {
 };
 
 int main() {
-  int  success;
+  int  success = 0;
   char infoLog[512];
 
   glfwInit();
@@ -57,8 +57,8 @@ int main() {
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
-    windowWidth  = width;
-    windowHeight = height;
+    windowWidth  = std::max(1, width);
+    windowHeight = std::max(1, height);
   });
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -98,12 +98,12 @@ int main() {
     std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
   }
 
-  unsigned int vbo;
+  unsigned int vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  unsigned int vao;
+  unsigned int vao = 0;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
