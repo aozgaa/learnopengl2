@@ -105,6 +105,7 @@ set(LEARNOPENGL2_APPS
 
     2.4.1.maps_diffuse
     2.4.2.maps_specular
+    2.4.3.maps_ex1 # imgui overlay
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})

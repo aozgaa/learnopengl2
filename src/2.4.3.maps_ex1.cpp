@@ -12,28 +12,45 @@
 
 #include "camera.h"
 #include "cube_info.h"
+#include "file.h"
 #include "gl_debug.h"
 #include "image.h"
+#include "materials.h"
 #include "shader_program.h"
 
 #include <array>
-#include <concepts>
 #include <iostream>
-#include <string>
+
+constexpr int DIFFUSE_TEXTURE_UNIT  = 5;
+constexpr int SPECULAR_TEXTURE_UNIT = 7;
+
+struct LightLocs {
+  GLint v_pos;
+  GLint ambient;
+  GLint diffuse;
+  GLint specular;
+};
+
+struct MaterialLocs {
+  GLint diffuse;
+  GLint specular;
+  GLint shininess;
+};
 
 struct CubeContext {
-  int          program;
   unsigned int vbo;
   unsigned int vao;
   unsigned int ebo;
+  GLuint       diffuseTexture;
+  GLuint       specularTexture;
+  int          program;
   struct Locations {
-    GLint model;
-    GLint view;
-    GLint projection;
-    GLint wsCameraPos;
-    GLint wsLightPos;
-    GLint objectColor;
-    GLint lightColor;
+    GLint        model;
+    GLint        view;
+    GLint        projection;
+    GLint        wsCameraPos;
+    MaterialLocs material;
+    LightLocs    light; // fixme: no ambient
   } locs;
 
   void init();
@@ -59,11 +76,11 @@ struct LightContext {
 
 void processInput(GLFWwindow *window);
 
-int windowWidth  = 8000;
-int windowHeight = 600;
+unsigned int windowWidth  = 800;
+unsigned int windowHeight = 600;
 
-const char *cubeVertexShaderPath    = "src/2.2.2.basic_lighting_phong_world.vert";
-const char *cubeFragmentShaderPath  = "src/2.2.2.basic_lighting_phong_world.frag";
+const char *cubeVertexShaderPath    = "src/2.4.2.maps_specular_cube.vert";
+const char *cubeFragmentShaderPath  = "src/2.4.2.maps_specular_cube.frag";
 const char *lightVertexShaderPath   = "src/2.1.light_source.vert";
 const char *lightFragmentShaderPath = "src/2.1.light_source.frag";
 
@@ -94,19 +111,18 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight, "LearnOpenGL",
-                                        glfwGetPrimaryMonitor(), nullptr);
+  GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
+                                        currentBasename().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();
     exit(1);
   }
   glfwMakeContextCurrent(window);
-  glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
   glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
-    windowWidth  = std::max(width, 1);
-    windowHeight = std::max(height, 1);
+    windowWidth  = width;
+    windowHeight = height;
   });
 
   glfwSetWindowFocusCallback(window, [](GLFWwindow *window, int focused) {
@@ -133,14 +149,16 @@ int main() {
     }
     camera.handleScroll(yoff);
   });
-  glfwSetKeyCallback(window,
-                     [](GLFWwindow *window, int key, int scancode, int action, int mods) {
-                       if (key == GLFW_KEY_GRAVE_ACCENT && action == GLFW_PRESS) {
-                         imguiFocused = !imguiFocused;
-                       }
-                     });
+  glfwSetKeyCallback(
+      window, [](GLFWwindow *window, int key, int scancode, int action, int mods) {
+        if (key == GLFW_KEY_GRAVE_ACCENT && action == GLFW_PRESS) {
+          imguiFocused = !imguiFocused;
+          glfwSetInputMode(window, GLFW_CURSOR,
+                           imguiFocused ? GLFW_CURSOR_CAPTURED : GLFW_CURSOR_DISABLED);
+        }
+      });
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_CAPTURED);
-  glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+  // glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE); // fixme: enable?
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::cerr << "failed to initialize GLAD" << std::endl;
@@ -157,8 +175,7 @@ int main() {
   light.init(cube);
   light.reload();
 
-  glfwMakeContextCurrent(window);
-  glfwSwapInterval(1); // Enable vsync
+  glfwSwapInterval(1); // Enable vsync for imgui
 
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
@@ -181,16 +198,20 @@ int main() {
   bool   show_another_window = false;
   ImVec4 clear_color         = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+  auto lightAmbient  = glm::vec3(0.2f);
+  auto lightDiffuse  = glm::vec3(0.5f);
+  auto lightSpecular = glm::vec3(1.0f);
+
   while (!glfwWindowShouldClose(window)) {
     if (fileChanged(cubeVertexShaderPath) || fileChanged(cubeFragmentShaderPath)) {
       cube.reload();
     }
 
-    processInput(window);
-
     float time = (float)glfwGetTime();
     dt         = time - frameStart;
     frameStart = time;
+
+    processInput(window);
 
     if (imguiFocused) {
       ImGui_ImplOpenGL3_NewFrame();
@@ -211,12 +232,17 @@ int main() {
       ImGui::SliderFloat("Y##Light", &lightPos.y, -5.0, 5.0, "%.4f");
       lightPos = glm::vec3(lightXZRad * cos(lightXZTheta), lightPos.y,
                            lightXZRad * sin(lightXZTheta));
+                           
+      ImGui::ColorEdit4("ambient", glm::value_ptr(lightAmbient),
+                        ImGuiColorEditFlags_Float);
+      ImGui::ColorEdit4("diffuse", glm::value_ptr(lightDiffuse),
+                        ImGuiColorEditFlags_Float);
+      ImGui::ColorEdit4("specular", glm::value_ptr(lightSpecular),
+                        ImGuiColorEditFlags_Float);
 
       ImGui::ShowDemoWindow(&show_demo_window);
 
       ImGui::Render();
-    } else {
-      lightPos = glm::vec3(cos(time * 0.6), 2.0 * sin(time), sin(time * 0.6));
     }
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -227,22 +253,29 @@ int main() {
     projection =
         glm::perspective(camera.fov, windowWidth / (float)windowHeight, 0.1f, 100.0f);
 
-    model = glm::mat4(1.0f);
-    // model = glm::rotate(model, time, glm::vec3(1.0, 0.3f, 0.5f));
-
-    auto lightColor = glm::vec3(1.0f);
+    auto viewLightPos = view * glm::vec4(lightPos, 1.0f);
 
     glUseProgram(cube.program);
 
     glBindVertexArray(cube.vao);
     glUniformMatrix4fv(cube.locs.view, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(cube.locs.projection, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(cube.locs.model, 1, GL_FALSE, glm::value_ptr(model));
-    glUniform3f(cube.locs.objectColor, 1.0f, 0.5f, 0.31f); // coral
-    glUniform3f(cube.locs.lightColor, lightColor.x, lightColor.y, lightColor.z);
     glUniform3f(cube.locs.wsCameraPos, camera.pos.x, camera.pos.y, camera.pos.z);
-    glUniform3f(cube.locs.wsLightPos, lightPos.x, lightPos.y, lightPos.z);
+    glUniform3f(cube.locs.light.v_pos, viewLightPos.x, viewLightPos.y, viewLightPos.z);
+    glUniform3f(cube.locs.light.ambient, lightAmbient.x, lightAmbient.y, lightAmbient.z);
+    glUniform3f(cube.locs.light.diffuse, 0.5f * lightDiffuse.x, 0.5f * lightDiffuse.y,
+                0.5f * lightDiffuse.z);
+    glUniform3f(cube.locs.light.specular, 1.0f * lightSpecular.x, 1.0f * lightSpecular.y,
+                1.0f * lightSpecular.z);
 
+    model = glm::mat4(1.0f);
+
+    glUniformMatrix4fv(cube.locs.model, 1, GL_FALSE, glm::value_ptr(model));
+    glActiveTexture(GL_TEXTURE0 + DIFFUSE_TEXTURE_UNIT);
+    glBindTexture(GL_TEXTURE_2D, cube.diffuseTexture);
+    glActiveTexture(GL_TEXTURE0 + SPECULAR_TEXTURE_UNIT);
+    glBindTexture(GL_TEXTURE_2D, cube.specularTexture);
+    glUniform1f(cube.locs.material.shininess, 64.0f);
     glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
 
     model = glm::mat4(1.0f);
@@ -253,7 +286,7 @@ int main() {
     glUniformMatrix4fv(light.locs.view, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(light.locs.projection, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(light.locs.model, 1, GL_FALSE, glm::value_ptr(model));
-    glUniform3f(light.locs.lightColor, lightColor.x, lightColor.y, lightColor.z);
+    glUniform3f(light.locs.lightColor, lightAmbient.x, lightAmbient.y, lightAmbient.z);
     glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
 
     if (imguiFocused) {
@@ -273,20 +306,10 @@ int main() {
 
   glfwDestroyWindow(window);
   glfwTerminate();
-
   return 0;
 }
 
 void processInput(GLFWwindow *window) {
-  if (imguiFocused) {
-    return; // ignore keys in app
-  }
-
-  if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-    ImGui::CaptureKeyboardFromApp(true);
-    ImGui::CaptureMouseFromApp(true);
-  }
-
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
   }
@@ -331,34 +354,62 @@ void CubeContext::init() {
   glVertexAttribPointer(0, CUBE_POS_SIZE, GL_FLOAT, GL_FALSE, sizeof(CubeVertex),
                         (void *)(CUBE_POS_OFF));
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, CUBE_NORMAL_SIZE, GL_FLOAT, GL_FALSE, sizeof(CubeVertex),
-                        (void *)(CUBE_NORMAL_OFF));
+  glVertexAttribPointer(1, CUBE_TEX_SIZE, GL_FLOAT, GL_FALSE, sizeof(CubeVertex),
+                        (void *)(CUBE_TEX_OFF)); // texture coords
   glEnableVertexAttribArray(1);
+  glVertexAttribPointer(2, CUBE_NORMAL_SIZE, GL_FLOAT, GL_FALSE, sizeof(CubeVertex),
+                        (void *)(CUBE_NORMAL_OFF));
+  glEnableVertexAttribArray(2);
 
-  glBindBuffer(GL_ARRAY_BUFFER, 0); // unbind
-  glBindVertexArray(0);             // unbind
+  glBindBuffer(GL_ARRAY_BUFFER, 0); // unbind -- for debugging
+  glBindVertexArray(0);             // unbind -- for debugging
+
+  diffuseTexture = 0;
+  glGenTextures(1, &diffuseTexture);
+  glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+  stbi_set_flip_vertically_on_load(true);
+  auto diffuseImage = stb::Image("assets/container2.png");
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, diffuseImage.width, diffuseImage.height, 0,
+               GL_RGBA, GL_UNSIGNED_BYTE, diffuseImage.data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  specularTexture = 0;
+  glGenTextures(1, &specularTexture);
+  glBindTexture(GL_TEXTURE_2D, specularTexture);
+  stbi_set_flip_vertically_on_load(true);
+  auto specularImage = stb::Image("assets/container2_specular.png");
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, specularImage.width, specularImage.height, 0,
+               GL_RGBA, GL_UNSIGNED_BYTE, specularImage.data);
+  glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 void CubeContext::reload() {
   reloadProgram(program, cubeVertexShaderPath, cubeFragmentShaderPath);
 
   // get uniform locations
-  locs.model       = glGetUniformLocation(program, "model");
-  locs.view        = glGetUniformLocation(program, "view");
-  locs.projection  = glGetUniformLocation(program, "projection");
-  locs.objectColor = glGetUniformLocation(program, "object_color");
-  locs.lightColor  = glGetUniformLocation(program, "light_color");
-  locs.wsLightPos  = glGetUniformLocation(program, "ws_light_pos");
-  locs.wsCameraPos = glGetUniformLocation(program, "ws_camera_pos");
+  locs.model              = glGetUniformLocation(program, "model");
+  locs.view               = glGetUniformLocation(program, "view");
+  locs.projection         = glGetUniformLocation(program, "projection");
+  locs.material.diffuse   = glGetUniformLocation(program, "material.diffuse");
+  locs.material.specular  = glGetUniformLocation(program, "material.specular");
+  locs.material.shininess = glGetUniformLocation(program, "material.shininess");
+  locs.light.v_pos        = glGetUniformLocation(program, "light.v_pos");
+  locs.light.ambient      = glGetUniformLocation(program, "light.ambient");
+  locs.light.diffuse      = glGetUniformLocation(program, "light.diffuse");
+  locs.light.specular     = glGetUniformLocation(program, "light.specular");
 
-  // set constant uniforms -- N/A
+  // set constant uniforms
+  glUseProgram(program);
+  glUniform1i(locs.material.diffuse, DIFFUSE_TEXTURE_UNIT);
+  glUniform1i(locs.material.specular, SPECULAR_TEXTURE_UNIT);
+  glUseProgram(0); // unbind -- for debugging
 }
 
 void CubeContext::cleanup() {
   glDeleteBuffers(1, &ebo);
   glDeleteVertexArrays(1, &vao);
   glDeleteBuffers(1, &vbo);
-  glDeleteProgram(program);
+  glDeleteProgram(cube.program);
 }
 
 void LightContext::init(const CubeContext &cube) {
