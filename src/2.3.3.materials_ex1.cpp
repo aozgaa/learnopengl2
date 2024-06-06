@@ -36,27 +36,37 @@ struct CubeContext {
   unsigned int vbo;
   unsigned int vao;
   unsigned int ebo;
-  GLint        modelLoc;
-  GLint        viewLoc;
-  GLint        projectionLoc;
-  GLint        wsCameraPosLoc;
-  MaterialLocs materialLocs;
-  LightLocs    lightLocs;
+  struct Locations {
+    GLint        model;
+    GLint        view;
+    GLint        projection;
+    GLint        wsCameraPos;
+    MaterialLocs material;
+    LightLocs    light;
+  } locs;
+
+  void init();
+  void reload();
+  void cleanup();
 };
 
 struct LightContext {
   int          program;
   unsigned int vao;
   unsigned int ebo;
-  GLint        modelLoc;
-  GLint        viewLoc;
-  GLint        projectionLoc;
-  GLint        lightColorLoc;
+  struct Locations {
+    GLint model;
+    GLint view;
+    GLint projection;
+    GLint lightColor;
+  } locs;
+
+  void init(const CubeContext &cube);
+  void reload();
+  void cleanup();
 };
 
-void         processInput(GLFWwindow *window);
-CubeContext  initCube();
-LightContext initLight(const CubeContext &cube);
+void processInput(GLFWwindow *window);
 
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
@@ -133,12 +143,15 @@ int main() {
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback(glDebugMessageCb, 0);
 
-  cube  = initCube();
-  light = initLight(cube);
+  cube.init();
+  cube.reload();
+
+  light.init(cube);
+  light.reload();
 
   while (!glfwWindowShouldClose(window)) {
     if (fileChanged(cubeVertexShaderPath) || fileChanged(cubeFragmentShaderPath)) {
-      reload3d(cube, cubeVertexShaderPath, cubeFragmentShaderPath);
+      cube.reload();
     }
 
     float time = (float)glfwGetTime();
@@ -162,15 +175,15 @@ int main() {
     glUseProgram(cube.program);
 
     glBindVertexArray(cube.vao);
-    glUniformMatrix4fv(cube.viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(cube.projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniform3f(cube.wsCameraPosLoc, camera.pos.x, camera.pos.y, camera.pos.z);
-    glUniform3f(cube.lightLocs.v_pos, viewLightPos.x, viewLightPos.y, viewLightPos.z);
-    glUniform3f(cube.lightLocs.ambient, 0.2f * lightColor.x, 0.2f * lightColor.y,
+    glUniformMatrix4fv(cube.locs.view, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(cube.locs.projection, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniform3f(cube.locs.wsCameraPos, camera.pos.x, camera.pos.y, camera.pos.z);
+    glUniform3f(cube.locs.light.v_pos, viewLightPos.x, viewLightPos.y, viewLightPos.z);
+    glUniform3f(cube.locs.light.ambient, 0.2f * lightColor.x, 0.2f * lightColor.y,
                 0.2f * lightColor.z);
-    glUniform3f(cube.lightLocs.diffuse, 0.5f * lightColor.x, 0.5f * lightColor.y,
+    glUniform3f(cube.locs.light.diffuse, 0.5f * lightColor.x, 0.5f * lightColor.y,
                 0.5f * lightColor.z);
-    glUniform3f(cube.lightLocs.specular, 1.0f * lightColor.x, 1.0f * lightColor.y,
+    glUniform3f(cube.locs.light.specular, 1.0f * lightColor.x, 1.0f * lightColor.y,
                 1.0f * lightColor.z);
 
     for (int i = 0; i < std::size(materials); ++i) {
@@ -180,14 +193,14 @@ int main() {
       model                = glm::mat4(1.0f);
       model = glm::translate(model, glm::vec3((col - 3.0) * 2.0, (row - 1.0) * 2.0, 0.0));
 
-      glUniformMatrix4fv(cube.modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-      glUniform3f(cube.materialLocs.ambient, material.ambient.x, material.ambient.y,
+      glUniformMatrix4fv(cube.locs.model, 1, GL_FALSE, glm::value_ptr(model));
+      glUniform3f(cube.locs.material.ambient, material.ambient.x, material.ambient.y,
                   material.ambient.z);
-      glUniform3f(cube.materialLocs.diffuse, material.diffuse.x, material.diffuse.y,
+      glUniform3f(cube.locs.material.diffuse, material.diffuse.x, material.diffuse.y,
                   material.diffuse.z);
-      glUniform3f(cube.materialLocs.specular, material.specular.x, material.specular.y,
+      glUniform3f(cube.locs.material.specular, material.specular.x, material.specular.y,
                   material.specular.z);
-      glUniform1f(cube.materialLocs.shininess, material.shininess);
+      glUniform1f(cube.locs.material.shininess, material.shininess);
       glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
     }
 
@@ -196,24 +209,18 @@ int main() {
     model = glm::scale(model, glm::vec3(0.1f));
     glUseProgram(light.program);
     glBindVertexArray(light.vao);
-    glUniformMatrix4fv(light.viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(light.projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(light.modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    glUniform3f(light.lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
+    glUniformMatrix4fv(light.locs.view, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(light.locs.projection, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(light.locs.model, 1, GL_FALSE, glm::value_ptr(model));
+    glUniform3f(light.locs.lightColor, lightColor.x, lightColor.y, lightColor.z);
     glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
 
-  glDeleteBuffers(1, &cube.ebo);
-  glDeleteVertexArrays(1, &cube.vao);
-  glDeleteBuffers(1, &cube.vbo);
-  glDeleteProgram(cube.program);
-
-  glDeleteBuffers(1, &light.vao);
-  glDeleteBuffers(1, &light.ebo);
-  glDeleteProgram(light.program);
+  cube.cleanup();
+  light.cleanup();
 
   glfwTerminate();
   return 0;
@@ -224,8 +231,8 @@ void processInput(GLFWwindow *window) {
     glfwSetWindowShouldClose(window, true);
   }
   if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-    reload3d(cube, cubeVertexShaderPath, cubeFragmentShaderPath);
-    reload3d(light, lightVertexShaderPath, lightFragmentShaderPath);
+    cube.reload();
+    light.reload();
   }
 
   // fixme: debug: move cube
@@ -246,31 +253,17 @@ void processInput(GLFWwindow *window) {
   camera.pollKeyboard(window, dt);
 }
 
-CubeContext initCube() {
-  CubeContext res{};
-
-  reload3d(res, cubeVertexShaderPath, cubeFragmentShaderPath);
-
-  res.wsCameraPosLoc         = glGetUniformLocation(res.program, "ws_camera_pos");
-  res.materialLocs.ambient   = glGetUniformLocation(res.program, "material.ambient");
-  res.materialLocs.diffuse   = glGetUniformLocation(res.program, "material.diffuse");
-  res.materialLocs.specular  = glGetUniformLocation(res.program, "material.specular");
-  res.materialLocs.shininess = glGetUniformLocation(res.program, "material.shininess");
-  res.lightLocs.v_pos        = glGetUniformLocation(res.program, "light.v_pos");
-  res.lightLocs.ambient      = glGetUniformLocation(res.program, "light.ambient");
-  res.lightLocs.diffuse      = glGetUniformLocation(res.program, "light.diffuse");
-  res.lightLocs.specular     = glGetUniformLocation(res.program, "light.specular");
-
-  unsigned int vbo = 0;
+void CubeContext::init() {
+  vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
-  unsigned int vao = 0;
+  vao = 0;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-  unsigned int ebo = 0;
+  ebo = 0;
   glGenBuffers(1, &ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
@@ -284,27 +277,42 @@ CubeContext initCube() {
 
   glBindBuffer(GL_ARRAY_BUFFER, 0); // unbind
   glBindVertexArray(0);             // unbind
-
-  res.vbo = vbo;
-  res.vao = vao;
-  res.ebo = ebo;
-
-  return res;
 }
 
-LightContext initLight(const CubeContext &cube) {
-  LightContext res{};
+void CubeContext::reload() {
+  reloadProgram(program, cubeVertexShaderPath, cubeFragmentShaderPath);
 
-  reload3d(res, lightVertexShaderPath, lightFragmentShaderPath);
+  // get uniform locations
+  locs.model              = glGetUniformLocation(program, "model");
+  locs.view               = glGetUniformLocation(program, "view");
+  locs.projection         = glGetUniformLocation(program, "projection");
+  locs.wsCameraPos        = glGetUniformLocation(program, "ws_camera_pos");
+  locs.material.ambient   = glGetUniformLocation(program, "material.ambient");
+  locs.material.diffuse   = glGetUniformLocation(program, "material.diffuse");
+  locs.material.specular  = glGetUniformLocation(program, "material.specular");
+  locs.material.shininess = glGetUniformLocation(program, "material.shininess");
+  locs.light.v_pos        = glGetUniformLocation(program, "light.v_pos");
+  locs.light.ambient      = glGetUniformLocation(program, "light.ambient");
+  locs.light.diffuse      = glGetUniformLocation(program, "light.diffuse");
+  locs.light.specular     = glGetUniformLocation(program, "light.specular");
 
-  res.lightColorLoc = glGetUniformLocation(res.program, "light_color");
+  // set constant uniforms -- N/A
+}
 
-  unsigned int vao = 0;
+void CubeContext::cleanup() {
+  glDeleteBuffers(1, &ebo);
+  glDeleteVertexArrays(1, &vao);
+  glDeleteBuffers(1, &vbo);
+  glDeleteProgram(program);
+}
+
+void LightContext::init(const CubeContext &cube) {
+  vao = 0;
   glGenVertexArrays(1, &vao);
   glBindBuffer(GL_ARRAY_BUFFER, cube.vbo);
   glBindVertexArray(vao);
 
-  unsigned int ebo = 0;
+  ebo = 0;
   glGenBuffers(1, &ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
@@ -315,8 +323,22 @@ LightContext initLight(const CubeContext &cube) {
 
   glBindBuffer(GL_ARRAY_BUFFER, 0); // unbind
   glBindVertexArray(0);             // unbind
+}
 
-  res.vao = vao;
-  res.ebo = ebo;
-  return res;
+void LightContext::reload() {
+  reloadProgram(program, lightVertexShaderPath, lightFragmentShaderPath);
+
+  // get uniform locations
+  locs.model      = glGetUniformLocation(program, "model");
+  locs.view       = glGetUniformLocation(program, "view");
+  locs.projection = glGetUniformLocation(program, "projection");
+  locs.lightColor = glGetUniformLocation(program, "light_color");
+
+  // set constant uniforms -- N/A
+}
+
+void LightContext::cleanup() {
+  glDeleteBuffers(1, &vao);
+  glDeleteBuffers(1, &ebo);
+  glDeleteProgram(program);
 }

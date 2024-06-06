@@ -68,9 +68,7 @@ struct LightContext {
   void cleanup();
 };
 
-void         processInput(GLFWwindow *window);
-CubeContext  initCube();
-LightContext initLight(const CubeContext &cube);
+void processInput(GLFWwindow *window);
 
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;

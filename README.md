@@ -81,5 +81,4 @@ When `clang` is used, `build/compile_commands.json` will be populated with comma
 
 # TODO
 - use gl types consistently instead of `int`, `unsigned int`, etc
-- remove reload3d
-- refactor apps to get uniform locations correctly as described 087b97c37cb1eb88cc6
+- apply blender glsl style guide consistently: https://developer.blender.org/docs/handbook/guidelines/glsl/

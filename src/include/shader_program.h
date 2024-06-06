@@ -7,18 +7,7 @@
 #include <iostream>
 #include <string>
 
-template <typename T>
-concept is_3d_context = requires(T v) {
-  { v.program } -> std::same_as<int &>;
-  { v.modelLoc } -> std::same_as<GLint &>;
-  { v.viewLoc } -> std::same_as<GLint &>;
-  { v.projectionLoc } -> std::same_as<GLint &>;
-};
-
 void reloadProgram(int &shaderProgram, const char *vertPath, const char *fragPath);
-template <is_3d_context Ctx>
-[[deprecated("suggested to get uniforms explicitly in one block")]] void
-reload3d(Ctx &ctx, const char *vertPath, const char *fragPath);
 
 static void checkShaderError(const int shader, const std::string &type) {
   int  success;
@@ -68,13 +57,4 @@ void reloadProgram(int &shaderProgram, const char *vertPath, const char *fragPat
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
   checkProgramError(shaderProgram);
-}
-
-template <is_3d_context Ctx>
-void reload3d(Ctx &ctx, const char *vertPath, const char *fragPath) {
-  reloadProgram(ctx.program, vertPath, fragPath);
-
-  ctx.modelLoc      = glGetUniformLocation(ctx.program, "model");
-  ctx.viewLoc       = glGetUniformLocation(ctx.program, "view");
-  ctx.projectionLoc = glGetUniformLocation(ctx.program, "projection");
 }
