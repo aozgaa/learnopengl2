@@ -17,7 +17,8 @@
 #include <array>
 #include <iostream>
 
-#define DIFFUSE_TEXTURE_UNIT 5
+constexpr int DIFFUSE_TEXTURE_UNIT  = 5;
+constexpr int SPECULAR_TEXTURE_UNIT = 7;
 
 struct LightLocs {
   GLint v_pos;
@@ -37,6 +38,7 @@ struct CubeContext {
   unsigned int vao;
   unsigned int ebo;
   GLuint       diffuseTexture;
+  GLuint       specularTexture;
   int          program;
   struct Locations {
     GLint        model;
@@ -73,8 +75,8 @@ void processInput(GLFWwindow *window);
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
-const char *cubeVertexShaderPath    = "src/2.4.1.maps_diffuse_cube.vert";
-const char *cubeFragmentShaderPath  = "src/2.4.1.maps_diffuse_cube.frag";
+const char *cubeVertexShaderPath    = "src/2.4.2.maps_specular_cube.vert";
+const char *cubeFragmentShaderPath  = "src/2.4.2.maps_specular_cube.frag";
 const char *lightVertexShaderPath   = "src/2.1.light_source.vert";
 const char *lightFragmentShaderPath = "src/2.1.light_source.frag";
 
@@ -192,7 +194,8 @@ int main() {
     glUniformMatrix4fv(cube.locs.model, 1, GL_FALSE, glm::value_ptr(model));
     glActiveTexture(GL_TEXTURE0 + DIFFUSE_TEXTURE_UNIT);
     glBindTexture(GL_TEXTURE_2D, cube.diffuseTexture);
-    glUniform3f(cube.locs.material.specular, 0.5f, 0.5f, 0.5f);
+    glActiveTexture(GL_TEXTURE0 + SPECULAR_TEXTURE_UNIT);
+    glBindTexture(GL_TEXTURE_2D, cube.specularTexture);
     glUniform1f(cube.locs.material.shininess, 64.0f);
     glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
 
@@ -277,9 +280,18 @@ void CubeContext::init() {
   glGenTextures(1, &diffuseTexture);
   glBindTexture(GL_TEXTURE_2D, diffuseTexture);
   stbi_set_flip_vertically_on_load(true);
-  auto containerImage = stb::Image("assets/container2.png");
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, containerImage.width, containerImage.height, 0,
-               GL_RGBA, GL_UNSIGNED_BYTE, containerImage.data);
+  auto diffuseImage = stb::Image("assets/container2.png");
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, diffuseImage.width, diffuseImage.height, 0,
+               GL_RGBA, GL_UNSIGNED_BYTE, diffuseImage.data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  specularTexture = 0;
+  glGenTextures(1, &specularTexture);
+  glBindTexture(GL_TEXTURE_2D, specularTexture);
+  stbi_set_flip_vertically_on_load(true);
+  auto specularImage = stb::Image("assets/container2_specular.png");
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, specularImage.width, specularImage.height, 0,
+               GL_RGBA, GL_UNSIGNED_BYTE, specularImage.data);
   glGenerateMipmap(GL_TEXTURE_2D);
 }
 
@@ -301,6 +313,7 @@ void CubeContext::reload() {
   // set constant uniforms
   glUseProgram(program);
   glUniform1i(locs.material.diffuse, DIFFUSE_TEXTURE_UNIT);
+  glUniform1i(locs.material.specular, SPECULAR_TEXTURE_UNIT);
   glUseProgram(0); // unbind -- for debugging
 }
 

@@ -104,6 +104,7 @@ set(LEARNOPENGL2_APPS
     # 2.3.4.materials_ex2 # implemented in previous
 
     2.4.1.maps_diffuse
+    2.4.2.maps_specular
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
