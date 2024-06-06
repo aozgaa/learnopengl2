@@ -15,9 +15,12 @@ concept is_3d_context = requires(T v) {
   { v.projectionLoc } -> std::same_as<GLint &>;
 };
 
-void reloadShaders(int &shaderProgram, const char *vertPath, const char *fragPath);
+void reloadProgram(int &shaderProgram, const char *vertPath, const char *fragPath);
+[[deprecated("use reloadProgram() instead")]] void
+reloadShaders(int &shaderProgram, const char *vertPath, const char *fragPath);
 template <is_3d_context Ctx>
-void reload3d(Ctx &ctx, const char *vertPath, const char *fragPath);
+[[deprecated("suggested to get uniforms explicitly in one block")]] void
+reload3d(Ctx &ctx, const char *vertPath, const char *fragPath);
 
 static void checkShaderError(const int shader, const std::string &type) {
   int  success;
@@ -40,7 +43,7 @@ static void checkProgramError(const int program) {
   }
 }
 
-void reloadShaders(int &shaderProgram, const char *vertPath, const char *fragPath) {
+void reloadProgram(int &shaderProgram, const char *vertPath, const char *fragPath) {
   glDeleteProgram(shaderProgram); // 0 silently ignored
 
   int  success;
@@ -67,6 +70,10 @@ void reloadShaders(int &shaderProgram, const char *vertPath, const char *fragPat
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
   checkProgramError(shaderProgram);
+}
+
+void reloadShaders(int &shaderProgram, const char *vertPath, const char *fragPath) {
+  reloadProgram(shaderProgram, vertPath, fragPath);
 }
 
 template <is_3d_context Ctx>
