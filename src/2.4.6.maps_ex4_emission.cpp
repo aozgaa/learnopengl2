@@ -50,6 +50,7 @@ struct CubeContext {
     GLint        wsCameraPos;
     MaterialLocs material;
     LightLocs    light; // fixme: no ambient
+    GLint        time;
   } locs;
 
   void init();
@@ -85,20 +86,21 @@ const char *lightFragmentShaderPath = "src/2.1.light_source.frag";
 
 float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 
-CubeContext  cube{};
-LightContext light{};
+CubeContext  cube;
+LightContext light;
 
 glm::mat4 model      = glm::mat4(1.0f);
 glm::mat4 view       = glm::mat4(1.0f);
 glm::mat4 projection = glm::mat4(1.0f);
-Camera    camera{};
+Camera    camera;
 
 auto lightPos = glm::vec3(1.0f, 0.4f, 3.0f);
 
 float frameStart = 0.0f;
 float dt         = 0.0f; // time spent in last frame
 
-bool gainedFocus = true;
+bool gainedFocusThisFrame = true;
+bool isFocused            = true;
 
 int main() {
   glfwInit();
@@ -126,14 +128,22 @@ int main() {
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glfwSetWindowFocusCallback(window, [](GLFWwindow *window, int focused) {
-    gainedFocus = focused == GLFW_TRUE;
+    isFocused = gainedFocusThisFrame = focused == GLFW_TRUE;
   });
-  glfwSetCursorPosCallback(window, [](GLFWwindow *window, double dx, double dy) {
-    glfwSetCursorPos(window, 0, 0); // reset to maintain precision
+  glfwSetCursorPosCallback(window, [](GLFWwindow *window, double x, double y) {
+    static double px = 0.0, py = 0.0;
+    auto          dx = x - px;
+    auto          dy = y - py;
+    px               = x;
+    py               = y;
 
-    if (gainedFocus) {
-      gainedFocus = false;
-      return; // ignore movement on first frame
+    if (!isFocused) {
+      return;
+    }
+
+    // ImGui::GetIO().WantCaptureMouse
+    if (gainedFocusThisFrame) {
+      return; // ignore movement
     }
 
     camera.handleMouse(dx, -dy); // (0,0) is top-left corner
@@ -159,14 +169,19 @@ int main() {
 
   while (!glfwWindowShouldClose(window)) {
     if (fileChanged(cubeVertexShaderPath) || fileChanged(cubeFragmentShaderPath)) {
+      std::cout << "detected change, reloading..." << std::endl;
       cube.reload();
     }
+
+    glfwPollEvents();
 
     float time = (float)glfwGetTime();
     dt         = time - frameStart;
     frameStart = time;
 
     processInput(window);
+
+    gainedFocusThisFrame = false; // unset
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -192,6 +207,7 @@ int main() {
                 0.5f * lightColor.z);
     glUniform3f(cube.locs.light.specular, 1.0f * lightColor.x, 1.0f * lightColor.y,
                 1.0f * lightColor.z);
+    glUniform1f(cube.locs.time, time);
 
     model = glm::mat4(1.0f);
 
@@ -217,7 +233,6 @@ int main() {
     glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window);
-    glfwPollEvents();
   }
 
   cube.cleanup();
@@ -304,6 +319,10 @@ void CubeContext::init() {
   glGenTextures(1, &emissionTexture);
   glBindTexture(GL_TEXTURE_2D, emissionTexture);
   auto wallImage = stb::Image("assets/matrix.jpg");
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+  float borderColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+  glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, wallImage.width, wallImage.height, 0, GL_RGB,
                GL_UNSIGNED_BYTE, wallImage.data);
   glGenerateMipmap(GL_TEXTURE_2D);
@@ -324,6 +343,7 @@ void CubeContext::reload() {
   locs.light.ambient      = glGetUniformLocation(program, "light.ambient");
   locs.light.diffuse      = glGetUniformLocation(program, "light.diffuse");
   locs.light.specular     = glGetUniformLocation(program, "light.specular");
+  locs.time               = glGetUniformLocation(program, "time");
 
   // set constant uniforms
   glUseProgram(program);
