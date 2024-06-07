@@ -3,31 +3,36 @@ out vec4 FragColor;
 
 in vec3 v_normal;
 in vec3 v_pos;
+in vec2 tex_coord;
 
 struct Material {
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
+    sampler2D diffuse;
+    sampler2D specular;
     float shininess;
 };
 
-uniform vec3 v_light_pos;
-uniform vec3 light_color;
+struct Light {
+    vec3 v_pos;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
 
 uniform Material material;
+uniform Light light;
 
 void main() {
-    vec3 ambient = material.ambient * light_color;
+    vec3 ambient = light.ambient * vec3(texture(material.diffuse, tex_coord));
 
     vec3 norm = normalize(v_normal);
-    vec3 light_dir = normalize(v_light_pos - v_pos);
+    vec3 light_dir = normalize(light.v_pos - v_pos);
     float cos_theta = max(0.0, dot(norm, light_dir));
-    vec3 diffuse = material.diffuse * cos_theta * light_color;
+    vec3 diffuse = cos_theta * light.diffuse * (1.0 - vec3(texture(material.diffuse, tex_coord)));
 
     vec3 camera_dir = normalize(-v_pos);
     vec3 bounce_dir = reflect(-light_dir, norm);
     float spec = pow(max(0.0, dot(camera_dir, bounce_dir)), material.shininess);
-    vec3 specular = material.specular * spec * light_color;
+    vec3 specular = spec * light.specular * (1.0 - vec3(texture(material.specular, tex_coord)));
 
     vec3 res = (ambient + diffuse + specular);
     FragColor = vec4(res, 1.0);

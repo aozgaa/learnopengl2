@@ -29,7 +29,7 @@ void main() {
     float cos_theta = max(0.0, dot(norm, light_dir));
     vec3 diffuse = light.diffuse * cos_theta * vec3(texture(material.diffuse, tex_coord));
 
-    vec3 camera_dir = normalize(-v_pos); // fixme: negate?
+    vec3 camera_dir = normalize(-v_pos);
     vec3 bounce_dir = reflect(-light_dir, norm);
     float spec = pow(max(0.0, dot(camera_dir, bounce_dir)), material.shininess);
     vec3 specular = light.specular * material.specular * spec;

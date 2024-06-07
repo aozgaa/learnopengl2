@@ -26,7 +26,7 @@ void main() {
     float diffuse = diffuse_strength * cos_theta;
 
     float specular_strength = 0.5;
-    vec3 camera_dir = normalize(-v_pos); // fixme: negate?
+    vec3 camera_dir = normalize(-v_pos);
     vec3 bounce_dir = reflect(-light_dir, norm);
     float spec = pow(max(0.0, dot(camera_dir, bounce_dir)), 32);
     float specular = specular_strength * spec;

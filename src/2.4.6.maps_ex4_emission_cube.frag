@@ -8,6 +8,7 @@ in vec2 tex_coord;
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
+    sampler2D emission;
     float shininess;
 };
 
@@ -34,6 +35,8 @@ void main() {
     float spec = pow(max(0.0, dot(camera_dir, bounce_dir)), material.shininess);
     vec3 specular = spec * light.specular * vec3(texture(material.specular, tex_coord));
 
-    vec3 res = (ambient + diffuse + specular);
+    vec3 emission = vec3(texture(material.emission, tex_coord));
+
+    vec3 res = ambient + diffuse + specular + emission;
     FragColor = vec4(res, 1.0);
 }

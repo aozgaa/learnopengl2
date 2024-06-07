@@ -105,7 +105,10 @@ set(LEARNOPENGL2_APPS
 
     2.4.1.maps_diffuse
     2.4.2.maps_specular
-    2.4.3.maps_ex1 # imgui overlay
+    2.4.3.maps_ex1_imgui
+    2.4.4.maps_ex2_invert
+    2.4.5.maps_ex3_specular_color
+    2.4.6.maps_ex4_emission
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})

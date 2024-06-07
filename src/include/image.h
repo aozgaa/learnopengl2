@@ -23,7 +23,14 @@ struct Image {
   Image(Image &other)             = delete;
   Image(Image &&other)            = delete;
   Image &operator=(Image &other)  = delete;
-  Image &operator=(Image &&other) = delete;
+  Image &operator=(Image &&other) {
+    std::swap(width, other.width);
+    std::swap(height, other.height);
+    std::swap(nrChannels, other.nrChannels);
+    std::swap(path, other.path);
+    std::swap(data, other.data);
+    return *this;
+  }
   ~Image() { stbi_image_free(data); }
 
   const auto get() const { return data; }
