@@ -11,10 +11,29 @@ void processInput(GLFWwindow *window);
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
+#define VARNAME(var) #var
+
 int main() {
   glfwInit();
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwSetErrorCallback([](int error, const char *desc) {
+    const char *error_msg = nullptr;
+    switch (error) {
+      case GLFW_API_UNAVAILABLE: error_msg = VARNAME(GLFW_API_UNAVAILABLE); break;
+      case GLFW_FORMAT_UNAVAILABLE: error_msg = VARNAME(GLFW_FORMAT_UNAVAILABLE); break;
+      case GLFW_INVALID_ENUM: error_msg = VARNAME(GLFW_INVALID_ENUM); break;
+      case GLFW_INVALID_VALUE: error_msg = VARNAME(GLFW_INVALID_VALUE); break;
+      case GLFW_NO_CURRENT_CONTEXT: error_msg = VARNAME(GLFW_NO_CURRENT_CONTEXT); break;
+      case GLFW_NOT_INITIALIZED: error_msg = VARNAME(GLFW_NOT_INITIALIZED); break;
+      case GLFW_OUT_OF_MEMORY: error_msg = VARNAME(GLFW_OUT_OF_MEMORY); break;
+      case GLFW_PLATFORM_ERROR: error_msg = VARNAME(GLFW_PLATFORM_ERROR); break;
+      case GLFW_VERSION_UNAVAILABLE: error_msg = VARNAME(GLFW_VERSION_UNAVAILABLE); break;
+      deafult: error_msg = "UNKNOWN CODE"; break;
+    }
+
+    std::cerr << "glfwErrorCallback: " << error << "(" << error_msg << "): " << desc << std::endl;
+  });
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
