@@ -31,17 +31,20 @@ static void checkProgramError(const int program) {
 }
 
 void reloadProgram(int &shaderProgram, const char *vertPath, const char *fragPath) {
+  auto vPath = ROOT + vertPath;
+  auto fPath = ROOT + fragPath;
+
   glDeleteProgram(shaderProgram); // 0 silently ignored
 
   unsigned int vertexShader       = glCreateShader(GL_VERTEX_SHADER);
-  std::string  triangleVertSource = readFile(vertPath);
+  std::string  triangleVertSource = readFile(vPath);
   const char  *cStr               = triangleVertSource.c_str();
   glShaderSource(vertexShader, 1, &cStr, nullptr);
   glCompileShader(vertexShader);
   checkShaderError(vertexShader, "VERTEX");
 
   unsigned int fragmentShader     = glCreateShader(GL_FRAGMENT_SHADER);
-  std::string  triangleFragSource = readFile(fragPath);
+  std::string  triangleFragSource = readFile(fPath);
   cStr                            = triangleFragSource.c_str();
   glShaderSource(fragmentShader, 1, &cStr, NULL);
   glCompileShader(fragmentShader);

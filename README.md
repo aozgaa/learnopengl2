@@ -53,11 +53,14 @@ Alternate presets could be created to support other platforms, shells, and depen
 
 # Running
 
-To pickup the correct shaders, always run from the repo root, eg:
+You can run from any location, so long as the source repo hasn't been moved
+(the repo root is used to resolve location of assets and shaders).
 
+Eg:
 ```
 build/1.1.hello_window.exe
-build/1.2.hello_triangle_ebo.exe
+cd build
+./1.2.hello_triangle_ebo.exe
 ...
 ```
 

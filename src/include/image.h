@@ -3,6 +3,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include "file.h"
+
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -15,14 +18,17 @@ struct Image {
   unsigned char *data;
 
   Image(const char *path_) : path(path_) {
+    path = ROOT + path;
     data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
     if (data == nullptr) {
-      throw new std::runtime_error("could not load image");
+      auto msg = "could not load image: " + path;
+      std::cerr << msg << std::endl;
+      throw new std::runtime_error(msg);
     }
   }
-  Image(Image &other)             = delete;
-  Image(Image &&other)            = delete;
-  Image &operator=(Image &other)  = delete;
+  Image(Image &other)            = delete;
+  Image(Image &&other)           = delete;
+  Image &operator=(Image &other) = delete;
   Image &operator=(Image &&other) {
     std::swap(width, other.width);
     std::swap(height, other.height);
