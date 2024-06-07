@@ -40,12 +40,12 @@ void main()
 };
 
 float vertices[][3] = {
-  {-0.75f, -0.5f, 0.0f}, // triangle 0
-  {-0.25f, -0.5f, 0.0f}, //
-  { -0.5f,  0.5f, 0.0f}, //
-  { 0.25f, -0.5f, 0.0f}, // triangle 1
-  { 0.75f, -0.5f, 0.0f}, //
-  {  0.5f,  0.5f, 0.0f}, //
+  { -0.75f, -0.5f, 0.0f }, // triangle 0
+  { -0.25f, -0.5f, 0.0f }, //
+  {  -0.5f,  0.5f, 0.0f }, //
+  {  0.25f, -0.5f, 0.0f }, // triangle 1
+  {  0.75f, -0.5f, 0.0f }, //
+  {   0.5f,  0.5f, 0.0f }, //
 };
 
 int main() {
@@ -94,8 +94,8 @@ int main() {
 
   for (int i = 0; i < 2; ++i) {
 
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    unsigned int fragmentShader = 0;
+    fragmentShader              = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &triangleFragSource[i], NULL);
     glCompileShader(fragmentShader);
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);

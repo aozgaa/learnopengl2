@@ -36,7 +36,7 @@ static consteval std::array<glm::vec3, 1000> initCubePositions() {
   }
   return res;
 }
-static constexpr auto whiskyPositions = initCubePositions();
+static constexpr auto WHISKY_POSITIONS = initCubePositions();
 
 float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 
@@ -100,11 +100,11 @@ int main() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-                        (void *)(0 * sizeof(float))); // position
+  glVertexAttribPointer(0, CUBE_POS_SIZE, GL_FLOAT, GL_FALSE, sizeof(CubeVertex),
+                        (void *)(CUBE_POS_OFF));
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-                        (void *)(3 * sizeof(float))); // texture coords
+  glVertexAttribPointer(1, CUBE_TEX_SIZE, GL_FLOAT, GL_FALSE, sizeof(CubeVertex),
+                        (void *)(CUBE_TEX_OFF)); // texture coords
   glEnableVertexAttribArray(1);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0); // unbind
@@ -159,9 +159,9 @@ int main() {
 
     glUseProgram(shaderProgram);
     glBindVertexArray(vao);
-    for (size_t i = 0; i < std::size(whiskyPositions); ++i) {
+    for (size_t i = 0; i < std::size(WHISKY_POSITIONS); ++i) {
       model = glm::mat4(1.0f);
-      model = glm::translate(model, whiskyPositions[i]);
+      model = glm::translate(model, WHISKY_POSITIONS[i]);
       model = glm::rotate(model, glm::radians(20.0f * i) + (float)glfwGetTime(),
                           glm::vec3(1.0, 0.3f, 0.5f));
       glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
