@@ -18,8 +18,8 @@ add_custom_target(lint-all)
 function(add_lint_target filename)
     get_filename_component(basename ${filename} NAME_WLE)
     add_custom_target(lint-${basename}
+        COMMAND clang-tidy --quiet -fix -p ${CMAKE_BINARY_DIR} ${filename}
         COMMAND clang-format -i ${filename}
-        COMMAND clang-tidy -p ${CMAKE_BINARY_DIR} ${filename}
     )
     add_dependencies(lint-all lint-${basename})
 endfunction()

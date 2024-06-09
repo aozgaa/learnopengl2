@@ -14,10 +14,10 @@
 #include "materials.h"
 #include "shader_program.h"
 
-#include <array>
-#include <iostream>
 #include <algorithm>
+#include <array>
 #include <cstdlib>
+#include <iostream>
 
 constexpr int DIFFUSE_TEXTURE_UNIT = 5;
 

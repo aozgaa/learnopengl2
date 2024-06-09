@@ -11,7 +11,11 @@
 #include "image.h"
 #include "shader_program.h"
 
+#include <algorithm>
 #include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 

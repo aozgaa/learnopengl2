@@ -12,12 +12,14 @@
 
 #include "camera.h"
 #include "cube_info.h"
+#include "file.h"
 #include "gl_debug.h"
-#include "image.h"
 #include "shader_program.h"
 
+#include <algorithm>
 #include <array>
-#include <concepts>
+#include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 

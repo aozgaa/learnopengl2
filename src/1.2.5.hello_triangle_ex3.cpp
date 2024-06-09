@@ -2,9 +2,12 @@
 
 #include <GLFW/glfw3.h>
 
-#include <iostream>
-
 #include "file.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdlib>
+#include <iostream>
 
 void processInput(GLFWwindow *window);
 

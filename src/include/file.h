@@ -8,9 +8,10 @@
 #include <cstring>
 #include <filesystem>
 #include <iostream>
-#include <source_location>
 #include <stdexcept>
 #include <string>
+
+#include <source_location>
 #include <unordered_map>
 
 constexpr std::string currentBasename(std::source_location location);
@@ -21,9 +22,9 @@ std::string readFile(const std::string &path);
 bool fileChanged(const std::string &path);
 
 static constexpr const auto findRoot() {
-  std::source_location location    = std::source_location::current();
-  auto                 fileName    = location.file_name();
-  const char*          lastSlashes[] = { fileName, fileName, fileName };
+  std::source_location location      = std::source_location::current();
+  auto                 fileName      = location.file_name();
+  const char          *lastSlashes[] = { fileName, fileName, fileName };
   for (auto it = fileName; *it != '\0'; ++it) {
     if (*it == '/' || *it == '\\') {
       lastSlashes[0] = lastSlashes[1];
@@ -36,7 +37,7 @@ static constexpr const auto findRoot() {
   return res;
 }
 static const constinit std::array<char, 100> ROOT_ARR = findRoot();
-const std::string                      ROOT(ROOT_ARR.begin());
+const std::string                            ROOT(ROOT_ARR.begin());
 
 std::string readFile(const std::string &path) {
   std::FILE *fp = std::fopen(path.data(), "rb");

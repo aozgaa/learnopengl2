@@ -10,11 +10,13 @@
 #include "cube_info.h"
 #include "file.h"
 #include "gl_debug.h"
-#include "image.h"
 #include "materials.h"
 #include "shader_program.h"
 
+#include <algorithm>
 #include <array>
+#include <cmath>
+#include <cstdlib>
 #include <iostream>
 
 struct LightLocs {

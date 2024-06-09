@@ -1,13 +1,14 @@
 #pragma once
 
+#include <utility>
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
 #include "file.h"
 
 #include <iostream>
 #include <stdexcept>
 #include <string>
+
+#include <stb_image.h>
 
 namespace stb {
 struct Image {
@@ -29,7 +30,7 @@ struct Image {
   Image(Image &other)            = delete;
   Image(Image &&other)           = delete;
   Image &operator=(Image &other) = delete;
-  Image &operator=(Image &&other) {
+  Image &operator=(Image &&other) noexcept {
     std::swap(width, other.width);
     std::swap(height, other.height);
     std::swap(nrChannels, other.nrChannels);

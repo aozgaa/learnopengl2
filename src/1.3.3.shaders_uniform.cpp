@@ -5,7 +5,9 @@
 #include "file.h"
 #include "shader_program.h"
 
+#include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <string>

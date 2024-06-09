@@ -18,12 +18,12 @@
 #include "materials.h"
 #include "shader_program.h"
 
-#include <array>
-#include <iostream>
-#include <ostream>
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdlib>
+#include <iostream>
+#include <ostream>
 
 constexpr int DIFFUSE_TEXTURE_UNIT  = 5;
 constexpr int SPECULAR_TEXTURE_UNIT = 7;

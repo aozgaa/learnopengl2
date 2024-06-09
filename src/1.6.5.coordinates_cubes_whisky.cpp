@@ -14,7 +14,11 @@
 #include "shader_program.h"
 #include "whisky.h"
 
+#include <algorithm>
 #include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 
