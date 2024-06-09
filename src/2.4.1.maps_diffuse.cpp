@@ -16,6 +16,8 @@
 
 #include <array>
 #include <iostream>
+#include <algorithm>
+#include <cstdlib>
 
 constexpr int DIFFUSE_TEXTURE_UNIT = 5;
 

@@ -2,10 +2,14 @@
 
 #include <algorithm>
 #include <array>
+#include <cerrno>
+#include <cstdint>
+#include <cstdio>
 #include <cstring>
 #include <filesystem>
 #include <iostream>
 #include <source_location>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 
@@ -19,7 +23,7 @@ bool fileChanged(const std::string &path);
 static constexpr const auto findRoot() {
   std::source_location location    = std::source_location::current();
   auto                 fileName    = location.file_name();
-  std::array           lastSlashes = { fileName, fileName, fileName };
+  const char*          lastSlashes[] = { fileName, fileName, fileName };
   for (auto it = fileName; *it != '\0'; ++it) {
     if (*it == '/' || *it == '\\') {
       lastSlashes[0] = lastSlashes[1];
@@ -31,7 +35,7 @@ static constexpr const auto findRoot() {
   std::ranges::copy(fileName, lastSlashes[0], res.begin());
   return res;
 }
-static constinit std::array<char, 100> ROOT_ARR = findRoot();
+static const constinit std::array<char, 100> ROOT_ARR = findRoot();
 const std::string                      ROOT(ROOT_ARR.begin());
 
 std::string readFile(const std::string &path) {

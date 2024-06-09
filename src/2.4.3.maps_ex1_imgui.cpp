@@ -20,6 +20,10 @@
 
 #include <array>
 #include <iostream>
+#include <ostream>
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
 
 constexpr int DIFFUSE_TEXTURE_UNIT  = 5;
 constexpr int SPECULAR_TEXTURE_UNIT = 7;

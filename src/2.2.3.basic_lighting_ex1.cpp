@@ -279,11 +279,6 @@ void processInput(GLFWwindow *window) {
     return; // ignore keys in app
   }
 
-  if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-    ImGui::CaptureKeyboardFromApp(true);
-    ImGui::CaptureMouseFromApp(true);
-  }
-
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
   }
