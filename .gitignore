@@ -1,8 +1,9 @@
 *.swp
 .cache/*
+.venv/
 .vscode/*
 CMakeUserPresets.json
 build/*
-out/*
+compile_commands.json
 imgui.ini
-.venv/
+out/*

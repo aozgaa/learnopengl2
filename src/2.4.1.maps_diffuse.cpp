@@ -75,7 +75,7 @@ void processInput(GLFWwindow *window);
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
-const char *cubeVertexShaderPath    = "src/2.4.1.maps_diffuse_cube.vert";
+const char *cubeVertexShaderPath    = "src/2.4.maps_texcoord_cube.vert";
 const char *cubeFragmentShaderPath  = "src/2.4.1.maps_diffuse_cube.frag";
 const char *lightVertexShaderPath   = "src/2.1.light_source.vert";
 const char *lightFragmentShaderPath = "src/2.1.light_source.frag";
