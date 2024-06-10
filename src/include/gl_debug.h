@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 
 #include <cstdio>
+#include <print>
 
 #define VARNAME(var) (#var)
 
@@ -13,7 +14,7 @@ void GLAPIENTRY glDebugMessageCb(GLenum source, GLenum type, GLuint id, GLenum s
   if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) {
     return; // ignore
   }
-  const char *type_cstr =
+  const char *typeCstr =
       type == GL_DEBUG_TYPE_ERROR ? VARNAME(GL_DEBUG_TYPE_ERROR)
       : type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR
           ? VARNAME(GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR)
@@ -29,19 +30,19 @@ void GLAPIENTRY glDebugMessageCb(GLenum source, GLenum type, GLuint id, GLenum s
       : type == GL_DEBUG_TYPE_POP_GROUP   ? VARNAME(GL_DEBUG_TYPE_POP_GROUP)
       : type == GL_DEBUG_TYPE_OTHER       ? VARNAME(GL_DEBUG_TYPE_OTHER)
                                           : "UNKNOWN TYPE";
-  const char *severity_cstr =
+  const char *severityCstr =
       severity == GL_DEBUG_SEVERITY_HIGH     ? VARNAME(GL_DEBUG_SEVERITY_HIGH)
       : severity == GL_DEBUG_SEVERITY_MEDIUM ? VARNAME(GL_DEBUG_SEVERITY_MEDIUM)
       : severity == GL_DEBUG_SEVERITY_LOW    ? VARNAME(GL_DEBUG_SEVERITY_LOW)
       : severity == GL_DEBUG_SEVERITY_NOTIFICATION
           ? VARNAME(GL_DEBUG_SEVERITY_NOTIFICATION)
           : "UNKNOWN_SEVERITY";
-  fprintf(stderr,
-          "GL CALLBACK: %s type = 0x%x (%s), "
-          "severity = 0x%x (%s), "
-          "message = %s\n",
-          (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, type_cstr,
-          severity, severity_cstr, message);
+  std::println(stderr,
+               "GL CALLBACK: {} type = 0x{:x} ({}), "
+               "severity = 0x{:x} ({}), "
+               "message = {}\n",
+               (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, typeCstr,
+               severity, severityCstr, message);
 }
 
 #undef VARNAME
