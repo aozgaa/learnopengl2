@@ -26,7 +26,6 @@ struct CubeVertex {
   float normal[3];
 };
 
-// fixme: remove these?
 const unsigned int CUBE_VERTEX_NELTS = sizeof(CubeVertex) / sizeof(float);
 const GLint        CUBE_POS_SIZE     = std::size(CubeVertex{}.pos);
 const GLint        CUBE_TEX_SIZE     = std::size(CubeVertex{}.tex);

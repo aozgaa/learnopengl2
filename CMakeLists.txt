@@ -109,6 +109,8 @@ set(LEARNOPENGL2_APPS
     2.4.4.maps_ex2_invert
     2.4.5.maps_ex3_specular_color
     2.4.6.maps_ex4_emission
+
+    2.5.1.casters_direction
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
