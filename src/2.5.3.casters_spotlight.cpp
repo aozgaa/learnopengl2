@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include <glm/geometric.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -24,6 +25,8 @@ constexpr int SPECULAR_TEXTURE_UNIT = 7;
 
 struct LightLocs {
   GLint v_pos;
+  GLint direction;
+  GLint spotlightCutoff;
   GLint ambient;
   GLint diffuse;
   GLint specular;
@@ -78,7 +81,7 @@ unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
 const char *cubeVertexShaderPath    = "src/2.4.maps_texcoord_cube.vert";
-const char *cubeFragmentShaderPath  = "src/2.4.2.maps_specular_cube.frag";
+const char *cubeFragmentShaderPath  = "src/2.5.3.casters_spotlight_cube.frag";
 const char *lightVertexShaderPath   = "src/2.1.light_source.vert";
 const char *lightFragmentShaderPath = "src/2.1.light_source.frag";
 
@@ -171,7 +174,8 @@ int main() {
 
     processInput(window);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+    // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glm::mat4 view = camera.view();
@@ -179,8 +183,9 @@ int main() {
     projection =
         glm::perspective(camera.fov, windowWidth / (float)windowHeight, 0.1f, 100.0f);
 
-    auto lightColor   = glm::vec3(1.0f);
-    auto viewLightPos = view * glm::vec4(lightPos, 1.0f);
+    auto lightColor        = glm::vec3(1.0f);
+    auto viewLightPos      = view * glm::vec4(lightPos, 1.0f);
+    auto viewLightToOrigin = viewLightPos - view * glm::vec4(0.0, 0.0, 0.0, 1.0);
 
     glUseProgram(cube.program);
 
@@ -189,22 +194,31 @@ int main() {
     glUniformMatrix4fv(cube.locs.projection, 1, GL_FALSE, glm::value_ptr(projection));
     glUniform3f(cube.locs.wsCameraPos, camera.pos.x, camera.pos.y, camera.pos.z);
     glUniform3f(cube.locs.light.v_pos, viewLightPos.x, viewLightPos.y, viewLightPos.z);
+    glUniform3f(cube.locs.light.direction, viewLightToOrigin.x, viewLightToOrigin.y,
+                viewLightToOrigin.z); // point to origin
+    glUniform1f(cube.locs.light.spotlightCutoff, glm::cos(glm::pi<float>() * 0.2));
     glUniform3f(cube.locs.light.ambient, 0.2f * lightColor.x, 0.2f * lightColor.y,
                 0.2f * lightColor.z);
     glUniform3f(cube.locs.light.diffuse, 0.5f * lightColor.x, 0.5f * lightColor.y,
                 0.5f * lightColor.z);
     glUniform3f(cube.locs.light.specular, 1.0f * lightColor.x, 1.0f * lightColor.y,
                 1.0f * lightColor.z);
-
-    model = glm::mat4(1.0f);
-
-    glUniformMatrix4fv(cube.locs.model, 1, GL_FALSE, glm::value_ptr(model));
     glActiveTexture(GL_TEXTURE0 + DIFFUSE_TEXTURE_UNIT);
     glBindTexture(GL_TEXTURE_2D, cube.diffuseTexture);
     glActiveTexture(GL_TEXTURE0 + SPECULAR_TEXTURE_UNIT);
     glBindTexture(GL_TEXTURE_2D, cube.specularTexture);
     glUniform1f(cube.locs.material.shininess, 64.0f);
-    glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
+
+    for (unsigned int i = 0; i < 1000; i++) {
+      glm::mat4 model = glm::mat4(1.0f);
+      auto      gridMove =
+          2.0f * glm::vec3((float)(i % 10), (float)((i / 10) % 10), -(float)(i / 100)) -
+          glm::vec3(5.0f);
+      model = glm::translate(model, gridMove);
+      glUniformMatrix4fv(cube.locs.model, 1, GL_FALSE, glm::value_ptr(model));
+
+      glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
+    }
 
     model = glm::mat4(1.0f);
     model = glm::translate(model, lightPos);
@@ -306,16 +320,18 @@ void CubeContext::reload() {
   reloadProgram(program, cubeVertexShaderPath, cubeFragmentShaderPath);
 
   // get uniform locations
-  locs.model              = glGetUniformLocation(program, "model");
-  locs.view               = glGetUniformLocation(program, "view");
-  locs.projection         = glGetUniformLocation(program, "projection");
-  locs.material.diffuse   = glGetUniformLocation(program, "material.diffuse");
-  locs.material.specular  = glGetUniformLocation(program, "material.specular");
-  locs.material.shininess = glGetUniformLocation(program, "material.shininess");
-  locs.light.v_pos        = glGetUniformLocation(program, "light.v_pos");
-  locs.light.ambient      = glGetUniformLocation(program, "light.ambient");
-  locs.light.diffuse      = glGetUniformLocation(program, "light.diffuse");
-  locs.light.specular     = glGetUniformLocation(program, "light.specular");
+  locs.model                 = glGetUniformLocation(program, "model");
+  locs.view                  = glGetUniformLocation(program, "view");
+  locs.projection            = glGetUniformLocation(program, "projection");
+  locs.material.diffuse      = glGetUniformLocation(program, "material.diffuse");
+  locs.material.specular     = glGetUniformLocation(program, "material.specular");
+  locs.material.shininess    = glGetUniformLocation(program, "material.shininess");
+  locs.light.v_pos           = glGetUniformLocation(program, "light.v_pos");
+  locs.light.direction       = glGetUniformLocation(program, "light.direction");
+  locs.light.spotlightCutoff = glGetUniformLocation(program, "light.spotlight_cutoff");
+  locs.light.ambient         = glGetUniformLocation(program, "light.ambient");
+  locs.light.diffuse         = glGetUniformLocation(program, "light.diffuse");
+  locs.light.specular        = glGetUniformLocation(program, "light.specular");
 
   // set constant uniforms
   glUseProgram(program);

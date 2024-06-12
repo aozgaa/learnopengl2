@@ -111,6 +111,10 @@ set(LEARNOPENGL2_APPS
     2.4.6.maps_ex4_emission
 
     2.5.1.casters_direction
+    2.5.2.casters_point
+    2.5.3.casters_spotlight
+    2.5.4.casters_spotlight_smooth
+    2.5.5.casters_flashlight
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})

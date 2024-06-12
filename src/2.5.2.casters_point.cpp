@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include <glm/geometric.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -78,7 +79,7 @@ unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
 const char *cubeVertexShaderPath    = "src/2.4.maps_texcoord_cube.vert";
-const char *cubeFragmentShaderPath  = "src/2.4.2.maps_specular_cube.frag";
+const char *cubeFragmentShaderPath  = "src/2.5.2.casters_point_cube.frag";
 const char *lightVertexShaderPath   = "src/2.1.light_source.vert";
 const char *lightFragmentShaderPath = "src/2.1.light_source.frag";
 
@@ -171,6 +172,7 @@ int main() {
 
     processInput(window);
 
+    // glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -195,16 +197,21 @@ int main() {
                 0.5f * lightColor.z);
     glUniform3f(cube.locs.light.specular, 1.0f * lightColor.x, 1.0f * lightColor.y,
                 1.0f * lightColor.z);
-
-    model = glm::mat4(1.0f);
-
-    glUniformMatrix4fv(cube.locs.model, 1, GL_FALSE, glm::value_ptr(model));
     glActiveTexture(GL_TEXTURE0 + DIFFUSE_TEXTURE_UNIT);
     glBindTexture(GL_TEXTURE_2D, cube.diffuseTexture);
     glActiveTexture(GL_TEXTURE0 + SPECULAR_TEXTURE_UNIT);
     glBindTexture(GL_TEXTURE_2D, cube.specularTexture);
     glUniform1f(cube.locs.material.shininess, 64.0f);
-    glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
+
+    for (unsigned int i = 0; i < 10; i++) {
+      glm::mat4 model = glm::mat4(1.0f);
+      model           = glm::translate(model, cubePositions[i]);
+      float angle     = 20.0f * i;
+      model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+      glUniformMatrix4fv(cube.locs.model, 1, GL_FALSE, glm::value_ptr(model));
+
+      glDrawElements(GL_TRIANGLES, std::size(cubeIndices), GL_UNSIGNED_INT, 0);
+    }
 
     model = glm::mat4(1.0f);
     model = glm::translate(model, lightPos);
