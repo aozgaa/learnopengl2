@@ -58,22 +58,6 @@ struct CubeContext {
   void cleanup();
 };
 
-// struct LightContext {
-//   int          program;
-//   unsigned int vao;
-//   unsigned int ebo;
-//   struct Locations {
-//     GLint model;
-//     GLint view;
-//     GLint projection;
-//     GLint lightColor;
-//   } locs;
-
-//   void init(const CubeContext &cube);
-//   void reload();
-//   void cleanup();
-// };
-
 void processInput(GLFWwindow *window);
 
 unsigned int windowWidth  = 800;
@@ -308,41 +292,3 @@ void CubeContext::cleanup() {
   glDeleteBuffers(1, &vbo);
   glDeleteProgram(cube.program);
 }
-
-// void LightContext::init(const CubeContext &cube) {
-//   vao = 0;
-//   glGenVertexArrays(1, &vao);
-//   glBindBuffer(GL_ARRAY_BUFFER, cube.vbo);
-//   glBindVertexArray(vao);
-
-//   ebo = 0;
-//   glGenBuffers(1, &ebo);
-//   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-//   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices,
-//   GL_STATIC_DRAW);
-
-//   glVertexAttribPointer(0, CUBE_POS_SIZE, GL_FLOAT, GL_FALSE, sizeof(CubeVertex),
-//                         (void *)(CUBE_POS_OFF));
-//   glEnableVertexAttribArray(0);
-
-//   glBindBuffer(GL_ARRAY_BUFFER, 0); // unbind
-//   glBindVertexArray(0);             // unbind
-// }
-
-// void LightContext::reload() {
-//   reloadProgram(program, lightVertexShaderPath, lightFragmentShaderPath);
-
-//   // get uniform locations
-//   locs.model      = glGetUniformLocation(program, "model");
-//   locs.view       = glGetUniformLocation(program, "view");
-//   locs.projection = glGetUniformLocation(program, "projection");
-//   locs.lightColor = glGetUniformLocation(program, "light_color");
-
-//   // set constant uniforms -- N/A
-// }
-
-// void LightContext::cleanup() {
-//   glDeleteBuffers(1, &vao);
-//   glDeleteBuffers(1, &ebo);
-//   glDeleteProgram(program);
-// }

@@ -12,7 +12,6 @@ struct Material {
 };
 
 struct Light {
-    vec3 direction; // spotlight direction
     float spotlight_cos_inner;
     float spotlight_cos_outer;
     vec3 ambient;
@@ -28,12 +27,13 @@ void main() {
 
     vec3 norm = normalize(v_normal);
     vec3 light_dir = normalize(-v_pos); // towards source (camera)
-    float cos_theta_surface = max(0.0, dot(norm, light_dir));
-    vec3 diffuse = cos_theta_surface * light.diffuse * vec3(texture(material.diffuse, tex_coord));
+    float surface_cos_theta = max(0.0, dot(norm, light_dir));
+    vec3 diffuse = surface_cos_theta * light.diffuse * vec3(texture(material.diffuse, tex_coord));
 
     vec3 camera_dir = normalize(-v_pos);
     vec3 bounce_dir = reflect(-light_dir, norm);
-    float spec = pow(max(0.0, dot(camera_dir, bounce_dir)), material.shininess);
+    float bounce_cam_cos_theta = max(0.0, dot(camera_dir, bounce_dir));
+    float spec = pow(bounce_cam_cos_theta, material.shininess);
     vec3 specular = spec * light.specular * vec3(texture(material.specular, tex_coord));
 
     vec3 res = ambient + diffuse + specular;
@@ -46,11 +46,9 @@ void main() {
     float f_att = 1.0/(k_0 + k_1 * d + k_2 * d_2);
     res *= f_att;
 
-    vec3 dir = vec3(0.0,0.0,-1.0);
-    float cos_theta_spotlight = dot(dir, normalize(v_pos));
-    // float cos_theta_spotlight = dot(light_dir, normalize(light.direction));
-    // res *= smoothstep(light.spotlight_cos_outer, light.spotlight_cos_inner, cos_theta_spotlight);
-    res *= smoothstep(0.95, 0.98, cos_theta_spotlight);
+    vec3 v_camera_dir = vec3(0.0,0.0,-1.0);
+    float spotlight_code_theta = dot(v_camera_dir, normalize(v_pos));
+    res *= smoothstep(light.spotlight_cos_outer, light.spotlight_cos_inner, spotlight_code_theta);
 
     FragColor = vec4(res, 1.0);
 }

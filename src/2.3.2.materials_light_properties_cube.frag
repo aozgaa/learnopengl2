@@ -25,7 +25,7 @@ void main() {
     vec3 ambient = light.ambient * material.ambient;
 
     vec3 norm = normalize(v_normal);
-    vec3 light_dir = normalize(light.v_pos - v_pos);
+    vec3 light_dir = normalize(light.v_pos - v_pos); // towards light source
     float cos_theta = max(0.0, dot(norm, light_dir));
     vec3 diffuse = light.diffuse * material.diffuse * cos_theta;
 
