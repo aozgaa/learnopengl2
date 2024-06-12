@@ -38,7 +38,7 @@ void GLAPIENTRY glDebugMessageCb(GLenum source, GLenum type, GLuint id, GLenum s
           ? VARNAME(GL_DEBUG_SEVERITY_NOTIFICATION)
           : "UNKNOWN_SEVERITY";
   std::println(stderr,
-               "GL CALLBACK: {} type = 0x{:x} ({}), "
+               "GL DEBUG MSG CALLBACK: {} type = 0x{:x} ({}), "
                "severity = 0x{:x} ({}), "
                "message = {}\n",
                (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, typeCstr,

@@ -115,6 +115,8 @@ set(LEARNOPENGL2_APPS
     2.5.3.casters_spotlight
     2.5.4.casters_spotlight_smooth
     2.5.5.casters_flashlight
+
+    2.6.1.multilights
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
