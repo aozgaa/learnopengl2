@@ -30,14 +30,17 @@ struct SpotLight {
 
 uniform Material material;
 uniform DirLight dir_light;
-uniform SpotLight spot_light;
+#define NR_SPOT_LIGHTS 4
+uniform SpotLight spot_lights[NR_SPOT_LIGHTS];
 
 vec3 dirLightColor(DirLight light);
 vec3 spotLightColor(SpotLight light);
 
 void main() {
     vec3 res = dirLightColor(dir_light);
-    res += spotLightColor(spot_light);
+    for(int i = 0; i < NR_SPOT_LIGHTS; ++i) {
+        res += spotLightColor(spot_lights[i]);
+    }
     FragColor = vec4(res, 1.0);
 }
 
@@ -84,7 +87,7 @@ vec3 spotLightColor(SpotLight light) {
     float f_att = 1.0/(k_0 + k_1 * d + k_2 * d_2);
     res *= f_att;
 
-    float cos_theta_spotlight = dot(light_dir, normalize(light.direction));
+    float cos_theta_spotlight = dot(light_dir, -normalize(light.direction)); // away from spotlight center
     res *= smoothstep(light.spotlight_cos_outer, light.spotlight_cos_inner, cos_theta_spotlight);
 
     return res;

@@ -46,7 +46,7 @@ void main() {
     float f_att = 1.0/(k_0 + k_1 * d + k_2 * d_2);
     res *= f_att;
 
-    float cos_theta_spotlight = dot(light_dir, normalize(light.direction));
+    float cos_theta_spotlight = dot(light_dir, -normalize(light.direction)); // away from spotlight center
     res *= cos_theta_spotlight > light.spotlight_cutoff ? 1.0 : 0.0;
 
     FragColor = vec4(res, 1.0);

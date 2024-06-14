@@ -185,7 +185,7 @@ int main() {
 
     auto lightColor        = glm::vec3(1.0f);
     auto viewLightPos      = view * glm::vec4(lightPos, 1.0f);
-    auto viewLightToOrigin = viewLightPos - view * glm::vec4(0.0, 0.0, 0.0, 1.0);
+    auto viewLightToOrigin = view * glm::vec4(0.0, 0.0, 0.0, 1.0) - viewLightPos;
 
     glUseProgram(cube.program);
 
