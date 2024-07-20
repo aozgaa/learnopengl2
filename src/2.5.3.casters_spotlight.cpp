@@ -12,7 +12,6 @@
 #include "file.h"
 #include "gl_debug.h"
 #include "image.h"
-#include "materials.h"
 #include "shader_program.h"
 
 #include <algorithm>

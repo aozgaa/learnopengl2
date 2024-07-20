@@ -1,6 +1,7 @@
 ---
 # Checks:          'clang-diagnostic-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,-modernize-use-trailing-return-type'
-Checks: '-*,
+Checks: >
+  -*,
   misc-include-cleaner,
   readability-identifier-naming,
   cppcoreguidelines-*,
@@ -18,15 +19,24 @@ Checks: '-*,
   -cppcoreguidelines-non-private-member-variables-in-classes,
   -cppcoreguidelines-pro-type-member-init,
   -cppcoreguidelines-prefer-member-initializer
-  '
+
 WarningsAsErrors: true
-FormatStyle:     file # use .clang-format
+FormatStyle:      file # use .clang-format
 CheckOptions:
-  - { key: misc-include-cleaner.IgnoreHeaders,                value: 'glm/.*' }
-  - { key: readability-identifier-naming.NamespaceCase,       value: lower_case }
-  - { key: readability-identifier-naming.ClassCase,           value: CamelCase  }
-  - { key: readability-identifier-naming.PrivateMemberPrefix, value: m_         }
-  - { key: readability-identifier-naming.StructCase,          value: CamelCase  }
-  - { key: readability-identifier-naming.FunctionCase,        value: camelBack }
-  - { key: readability-identifier-naming.VariableCase,        value: camelBack }
-  - { key: readability-identifier-naming.GlobalConstantCase,  value: UPPER_CASE }
+  - key: misc-include-cleaner.IgnoreHeaders
+    value: 'glm.*'
+  - key: readability-identifier-naming.NamespaceCase       
+    value: lower_case 
+  - key: readability-identifier-naming.ClassCase           
+    value: CamelCase  
+  - key: readability-identifier-naming.PrivateMemberPrefix 
+    value: m_         
+  - key: readability-identifier-naming.StructCase          
+    value: CamelCase  
+  - key: readability-identifier-naming.FunctionCase        
+    value: camelBack
+  - key: readability-identifier-naming.VariableCase        
+    value: camelBack
+  - key: readability-identifier-naming.GlobalConstantCase  
+    value: UPPER_CASE 
+
