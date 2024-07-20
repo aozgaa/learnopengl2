@@ -37,7 +37,7 @@ static constexpr const auto findRoot() {
   return res;
 }
 static const constinit std::array<char, 100> ROOT_ARR = findRoot();
-const std::string                            ROOT(ROOT_ARR.begin());
+const std::string                            ROOT(ROOT_ARR.data());
 
 std::string readFile(const std::string &path) {
   std::FILE *fp = std::fopen(path.data(), "rb");
