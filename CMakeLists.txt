@@ -128,6 +128,7 @@ set(LEARNOPENGL2_APPS
 
     3.1.1.build_assimp
 
+    3.2.1.mesh
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})
