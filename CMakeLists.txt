@@ -10,6 +10,7 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
 
 find_package(Stb REQUIRED)
 
@@ -37,6 +38,7 @@ add_lint_target(${CMAKE_CURRENT_SOURCE_DIR}/src/include/camera.h)
 
 function(add_executable_learnopengl2 name)
     add_executable(${name} src/${name}.cpp)
+    target_link_libraries(${name} PRIVATE assimp::assimp)
     target_link_libraries(${name} PRIVATE glfw)
     target_link_libraries(${name} PRIVATE glad::glad)
     target_link_libraries(${name} PRIVATE glm::glm-header-only)
@@ -123,6 +125,9 @@ set(LEARNOPENGL2_APPS
     2.5.5.casters_flashlight
 
     2.6.1.multilights
+
+    3.1.1.build_assimp
+
 )
 
 foreach(APP ${LEARNOPENGL2_APPS})

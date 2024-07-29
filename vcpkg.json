@@ -4,6 +4,7 @@
     "glad",
     "glm",
     "stb",
+    "assimp",
     {
       "name": "imgui",
       "features": [
