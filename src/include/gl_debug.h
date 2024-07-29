@@ -2,8 +2,62 @@
 
 #include <glad/glad.h>
 
+#include <csignal>
 #include <cstdio>
 #include <print>
+
+/////////////////////////////////////////////
+// GLCALL-style debugging
+/////////////////////////////////////////////
+
+#define ENUM_TEXT_PAIR(x)                                                                \
+  { x, #x }
+
+struct EnumTextPair {
+  GLenum      m_enum;
+  const char *m_text;
+};
+
+const char *GetGLErrorString(GLenum error) {
+  static const EnumTextPair errors[] = { ENUM_TEXT_PAIR(GL_NO_ERROR),
+                                         ENUM_TEXT_PAIR(GL_INVALID_ENUM),
+                                         ENUM_TEXT_PAIR(GL_INVALID_VALUE),
+                                         ENUM_TEXT_PAIR(GL_INVALID_OPERATION),
+                                         ENUM_TEXT_PAIR(GL_INVALID_FRAMEBUFFER_OPERATION),
+                                         ENUM_TEXT_PAIR(GL_OUT_OF_MEMORY) };
+
+  for (int errorIndex = 0; errorIndex < std::size(errors); ++errorIndex) {
+    if (errors[errorIndex].m_enum == error) {
+      return errors[errorIndex].m_text;
+    }
+  }
+
+  return "Unknown error!";
+}
+
+#if defined(_DEBUG)
+#define GLCALL(call)                                                                     \
+  do {                                                                                   \
+    GLenum preError = glGetError();                                                      \
+    call;                                                                                \
+    GLenum postError = glGetError();                                                     \
+    GLenum error     = preError != GL_NO_ERROR ? preError : postError;                   \
+    if (error != GL_NO_ERROR) {                                                          \
+      std::println("GLError [0x{:08x}]: {} encountered {} executing:\n\t" #call, error,  \
+                   GetGLErrorString(error), error == preError ? "BEFORE" : "WHILE");     \
+      std::raise(SIGINT);                                                                \
+    }                                                                                    \
+  } while (0)
+#else
+#define GLCALL(call)                                                                     \
+  do {                                                                                   \
+    call;                                                                                \
+  } while (0)
+#endif
+
+/////////////////////////////////////////////
+// glDebugMessageCb
+/////////////////////////////////////////////
 
 #define VARNAME(var) (#var)
 
