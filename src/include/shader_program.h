@@ -31,7 +31,7 @@ static void checkProgramError(const int program) {
   }
 }
 
-void reloadProgram(int &shaderProgram, const char *vertPath, const char *fragPath) {
+void reloadProgram(GLuint &shaderProgram, const char *vertPath, const char *fragPath) {
   auto vPath = ROOT + vertPath;
   auto fPath = ROOT + fragPath;
 

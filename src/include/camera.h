@@ -12,7 +12,7 @@ struct Camera {
   static const glm::vec3 UP;
 
   glm::vec3 pos;
-  float     yaw;   // radians -- rightwards from z axis
+  float     yaw;   // radians -- rightwards from -z axis
   float     pitch; // radians -- up from xz-plane
   float     fov;   // radians
 
