@@ -15,13 +15,16 @@ IncludeCategories:
   - Regex:           '^<GLFW/glfw3.h>$'
     Priority:        1
     CaseSensitive:   true
-  - Regex:           '^<glm/.*$'
+  - Regex:           '^<glm/.*>$'
     Priority:        2
     CaseSensitive:   true
-  - Regex:           '^"imgui.*\.h"$'
+  - Regex:           '^<assimp.*\.h>$'
     Priority:        3
     CaseSensitive:   true
-  - Regex:           '^".*"$'
+  - Regex:           '^"imgui.*\.h"$'
     Priority:        4
-  - Regex:           '<[[:alnum:].]+>'
+    CaseSensitive:   true
+  - Regex:           '^".*"$'
     Priority:        5
+  - Regex:           '<[[:alnum:].]+>'
+    Priority:        6

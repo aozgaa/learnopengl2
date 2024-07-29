@@ -13,7 +13,14 @@ find_package(imgui CONFIG REQUIRED)
 
 find_package(Stb REQUIRED)
 
-add_custom_target(lint-all)
+find_program(run_clang_tidy_path
+    NAMES run-clang-tidy
+    HINTS "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\"
+    REQUIRED
+)
+
+add_custom_target(lint-all
+    COMMAND python "${run_clang_tidy_path}" -p "${CMAKE_BINARY_DIR}" -fix)
 
 function(add_lint_target filename)
     get_filename_component(basename ${filename} NAME_WLE)
@@ -21,7 +28,6 @@ function(add_lint_target filename)
         COMMAND clang-tidy --quiet -fix -p ${CMAKE_BINARY_DIR} ${filename}
         COMMAND clang-format -i ${filename}
     )
-    add_dependencies(lint-all lint-${basename})
 endfunction()
 
 add_lint_target(${CMAKE_CURRENT_SOURCE_DIR}/src/include/file.h)
