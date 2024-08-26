@@ -26,7 +26,7 @@ float vertices[] = {
   0.0f,  0.5f,  0.0f, // v2
 };
 
-int shaderProgram = {};
+GLuint shaderProgram = {};
 
 int main() {
   glfwInit();

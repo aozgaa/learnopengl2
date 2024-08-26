@@ -34,12 +34,12 @@ void main()
 )";
 
 float vertices[][3] = {
-  { -0.75f, -0.5f, 0.0f }, // triangle 0
-  { -0.25f, -0.5f, 0.0f }, //
-  {  -0.5f,  0.5f, 0.0f }, //
-  {  0.25f, -0.5f, 0.0f }, // triangle 1
-  {  0.75f, -0.5f, 0.0f }, //
-  {   0.5f,  0.5f, 0.0f }, //
+  {-0.75f, -0.5f, 0.0f}, // triangle 0
+  {-0.25f, -0.5f, 0.0f}, //
+  { -0.5f,  0.5f, 0.0f}, //
+  { 0.25f, -0.5f, 0.0f}, // triangle 1
+  { 0.75f, -0.5f, 0.0f}, //
+  {  0.5f,  0.5f, 0.0f}, //
 };
 
 int main() {
@@ -92,8 +92,8 @@ int main() {
     std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
   }
 
-  unsigned int shaderProgram = 0;
-  shaderProgram              = glCreateProgram();
+  GLuint shaderProgram = 0;
+  shaderProgram        = glCreateProgram();
   glAttachShader(shaderProgram, vertexShader);
   glAttachShader(shaderProgram, fragmentShader);
   glLinkProgram(shaderProgram);

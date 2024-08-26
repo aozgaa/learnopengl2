@@ -94,8 +94,8 @@ int main() {
     std::cerr << "ERROR:SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
   }
 
-  unsigned int shaderProgram = 0;
-  shaderProgram              = glCreateProgram();
+  GLuint shaderProgram = 0;
+  shaderProgram        = glCreateProgram();
   glAttachShader(shaderProgram, vertexShader);
   glAttachShader(shaderProgram, fragmentShader);
   glLinkProgram(shaderProgram);

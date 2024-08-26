@@ -42,7 +42,7 @@ struct CubeContext {
   unsigned int ebo;
   GLuint       diffuseTexture;
   GLuint       specularTexture;
-  int          program;
+  GLuint       program;
   struct Locations {
     GLint        model;
     GLint        view;

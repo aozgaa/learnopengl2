@@ -38,7 +38,7 @@ struct CubeContext {
   unsigned int vao;
   unsigned int ebo;
   GLuint       diffuseTexture;
-  int          program;
+  GLuint       program;
   struct Locations {
     GLint        model;
     GLint        view;
@@ -54,7 +54,7 @@ struct CubeContext {
 };
 
 struct LightContext {
-  int          program;
+  GLuint       program;
   unsigned int vao;
   unsigned int ebo;
   struct Locations {

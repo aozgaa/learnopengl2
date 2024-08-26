@@ -46,7 +46,7 @@ struct CubeContext {
   GLuint                diffuseTexture;
   std::array<GLuint, 3> specularTextures;
   int                   activeSpecular;
-  int                   program;
+  GLuint                program;
   struct Locations {
     GLint        model;
     GLint        view;
@@ -62,7 +62,7 @@ struct CubeContext {
 };
 
 struct LightContext {
-  int          program;
+  GLuint       program;
   unsigned int vao;
   unsigned int ebo;
   struct Locations {

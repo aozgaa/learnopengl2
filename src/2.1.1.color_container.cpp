@@ -20,7 +20,7 @@
 #include <string>
 
 struct CubeContext {
-  int          program;
+  GLuint       program;
   unsigned int vbo;
   unsigned int vao;
   unsigned int ebo;
@@ -38,7 +38,7 @@ struct CubeContext {
 };
 
 struct LightContext {
-  int          program;
+  GLuint       program;
   unsigned int vao;
   unsigned int ebo;
   struct Locations {

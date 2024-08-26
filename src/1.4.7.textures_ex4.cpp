@@ -38,10 +38,10 @@ float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 constexpr int WALL_TEXTURE_UNIT   = 3;
 constexpr int SMILEY_TEXTURE_UNIT = 5;
 
-int   shaderProgram = 0;
-GLint wallLoc       = 0;
-GLint smileyLoc     = 0;
-GLint mixparamLoc   = 0;
+GLuint shaderProgram = 0;
+GLint  wallLoc       = 0;
+GLint  smileyLoc     = 0;
+GLint  mixparamLoc   = 0;
 
 float mixParam = 0.5;
 

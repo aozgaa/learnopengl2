@@ -36,7 +36,7 @@ unsigned int indices[] = {
 
 float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
 
-int shaderProgram = {};
+GLuint shaderProgram = {};
 
 int main() {
   glfwInit();

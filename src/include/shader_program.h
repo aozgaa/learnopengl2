@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string>
 
-void reloadProgram(int &shaderProgram, const char *vertPath, const char *fragPath);
+void reloadProgram(GLuint &shaderProgram, const char *vertPath, const char *fragPath);
 
 static void checkShaderError(const int shader, const std::string &type) {
   int  success = 0;
@@ -21,7 +21,7 @@ static void checkShaderError(const int shader, const std::string &type) {
   }
 }
 
-static void checkProgramError(const int program) {
+static void checkProgramError(const GLuint program) {
   int  success = 0;
   char infoLog[512];
   glGetProgramiv(program, GL_LINK_STATUS, &success);

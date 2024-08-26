@@ -95,12 +95,12 @@ float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 constexpr int WALL_TEXTURE_UNIT   = 3;
 constexpr int SMILEY_TEXTURE_UNIT = 5;
 
-int   shaderProgram = 0;
-GLint wallLoc       = 0;
-GLint smileyLoc     = 0;
-GLint modelLoc      = 0;
-GLint viewLoc       = 0;
-GLint projectionLoc = 0;
+GLuint shaderProgram = 0;
+GLint  wallLoc       = 0;
+GLint  smileyLoc     = 0;
+GLint  modelLoc      = 0;
+GLint  viewLoc       = 0;
+GLint  projectionLoc = 0;
 
 glm::mat4 model      = glm::mat4(1.0f);
 glm::mat4 view       = glm::mat4(1.0f);
