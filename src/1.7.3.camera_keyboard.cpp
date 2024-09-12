@@ -206,7 +206,7 @@ void processInput(GLFWwindow *window) {
     reloadProgram(shaderProgram, vertexShaderPath, fragmentShaderPath);
     resetUniforms(shaderProgram);
   }
-  const float speed = 0.1f * dt;
+  const float speed = 2.0f * dt;
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     camera.camPos -= speed * camera.camDir;
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
