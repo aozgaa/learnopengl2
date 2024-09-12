@@ -19,7 +19,6 @@ find_package(Stb REQUIRED)
 find_program(run_clang_tidy_path
     NAMES run-clang-tidy
     HINTS "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\Llvm\\x64\\bin\\"
-    REQUIRED
 )
 
 add_custom_target(lint-all
