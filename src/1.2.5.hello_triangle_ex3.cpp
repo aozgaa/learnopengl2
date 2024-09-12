@@ -43,12 +43,12 @@ void main()
 };
 
 float vertices[][3] = {
-  {-0.75f, -0.5f, 0.0f}, // triangle 0
-  {-0.25f, -0.5f, 0.0f}, //
-  { -0.5f,  0.5f, 0.0f}, //
-  { 0.25f, -0.5f, 0.0f}, // triangle 1
-  { 0.75f, -0.5f, 0.0f}, //
-  {  0.5f,  0.5f, 0.0f}, //
+  { -0.75f, -0.5f, 0.0f }, // triangle 0
+  { -0.25f, -0.5f, 0.0f }, //
+  {  -0.5f,  0.5f, 0.0f }, //
+  {  0.25f, -0.5f, 0.0f }, // triangle 1
+  {  0.75f, -0.5f, 0.0f }, //
+  {   0.5f,  0.5f, 0.0f }, //
 };
 
 int main() {
@@ -65,7 +65,7 @@ int main() {
 #endif
 
   GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
-                                        currentBasename().c_str(), nullptr, nullptr);
+                                        CURRENT_BASENAME().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();

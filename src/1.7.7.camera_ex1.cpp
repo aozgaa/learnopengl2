@@ -21,7 +21,7 @@
 
 struct XZCamera : public Camera {
   void pollKeyboard(GLFWwindow *window, float dt) {
-    const float speed   = 0.1f * dt;
+    const float speed   = 2.0f * dt;
     glm::vec3   xzDir   = glm::normalize(glm::vec3(m_z.x, 0.0f, m_z.z));
     glm::vec3   xzRight = glm::vec3(-xzDir.z, 0.0f, xzDir.x);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -81,7 +81,7 @@ int main() {
 #endif
 
   GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
-                                        currentBasename().c_str(), nullptr, nullptr);
+                                        CURRENT_BASENAME().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();

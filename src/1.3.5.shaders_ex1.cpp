@@ -37,9 +37,8 @@ int main() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-
   GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
-                                        currentBasename().c_str(), nullptr, nullptr);
+                                        CURRENT_BASENAME().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();

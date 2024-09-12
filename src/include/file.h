@@ -22,8 +22,8 @@ std::string readFile(const std::string &path);
 bool fileChanged(const std::string &path);
 
 static constexpr const auto findRoot() {
-  std::source_location location      = std::source_location::current();
-  auto                 fileName      = location.file_name();
+  std::source_location location = std::source_location::current(); // src/include/file.h
+  auto                 fileName = location.file_name();
   const char          *lastSlashes[] = { fileName, fileName, fileName };
   for (auto it = fileName; *it != '\0'; ++it) {
     if (*it == '/' || *it == '\\') {
@@ -67,8 +67,7 @@ bool fileChanged(const std::string &path) {
   return false;
 }
 
-constexpr std::string
-currentBasename(std::source_location location = std::source_location::current()) {
+constexpr std::string currentBasename(std::source_location location) {
   auto fileName  = location.file_name();
   auto baseStart = fileName;
   auto lastDot   = fileName;
@@ -85,3 +84,5 @@ currentBasename(std::source_location location = std::source_location::current())
 
   return res;
 }
+
+#define CURRENT_BASENAME() currentBasename(std::source_location::current())

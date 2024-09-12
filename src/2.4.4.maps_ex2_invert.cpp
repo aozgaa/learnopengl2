@@ -116,7 +116,7 @@ int main() {
 #endif
 
   GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
-                                        currentBasename().c_str(), nullptr, nullptr);
+                                        CURRENT_BASENAME().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();

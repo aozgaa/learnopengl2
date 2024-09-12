@@ -17,6 +17,7 @@
 #include <array>
 #include <cstdlib>
 #include <iostream>
+#include <vector>
 
 constexpr int DIFFUSE_TEXTURE_UNIT  = 5;
 constexpr int SPECULAR_TEXTURE_UNIT = 7;
@@ -36,6 +37,7 @@ struct MaterialLocs {
 
 struct Texture {
   GLuint id;
+  Texture(GLuint id_) : id(id_) {}
 };
 
 struct Mesh {
@@ -126,7 +128,7 @@ int main() {
 #endif
 
   GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
-                                        currentBasename().c_str(), nullptr, nullptr);
+                                        CURRENT_BASENAME().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();

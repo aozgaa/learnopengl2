@@ -19,6 +19,8 @@
 #include <iostream>
 #include <string>
 
+#define VARNAME(var) #var
+
 struct CubeContext {
   GLuint       program;
   unsigned int vbo;
@@ -80,16 +82,53 @@ bool gainedFocus = true;
 
 int main() {
   glfwInit();
+  glfwSetErrorCallback([](int error, const char *desc) {
+    const char *errorMsg = nullptr;
+    switch (error) {
+    case GLFW_API_UNAVAILABLE:
+      errorMsg = VARNAME(GLFW_API_UNAVAILABLE);
+      break;
+    case GLFW_FORMAT_UNAVAILABLE:
+      errorMsg = VARNAME(GLFW_FORMAT_UNAVAILABLE);
+      break;
+    case GLFW_INVALID_ENUM:
+      errorMsg = VARNAME(GLFW_INVALID_ENUM);
+      break;
+    case GLFW_INVALID_VALUE:
+      errorMsg = VARNAME(GLFW_INVALID_VALUE);
+      break;
+    case GLFW_NO_CURRENT_CONTEXT:
+      errorMsg = VARNAME(GLFW_NO_CURRENT_CONTEXT);
+      break;
+    case GLFW_NOT_INITIALIZED:
+      errorMsg = VARNAME(GLFW_NOT_INITIALIZED);
+      break;
+    case GLFW_OUT_OF_MEMORY:
+      errorMsg = VARNAME(GLFW_OUT_OF_MEMORY);
+      break;
+    case GLFW_PLATFORM_ERROR:
+      errorMsg = VARNAME(GLFW_PLATFORM_ERROR);
+      break;
+    case GLFW_VERSION_UNAVAILABLE:
+      errorMsg = VARNAME(GLFW_VERSION_UNAVAILABLE);
+      break;
+    deafult:
+      errorMsg = "UNKNOWN CODE";
+      break;
+    }
+
+    std::cerr << "glfwErrorCallback: " << error << "(" << errorMsg << "): " << desc
+              << std::endl;
+  });
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
   GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
-                                        currentBasename().c_str(), nullptr, nullptr);
+                                        CURRENT_BASENAME().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();

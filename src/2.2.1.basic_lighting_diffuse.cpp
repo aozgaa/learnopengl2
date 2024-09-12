@@ -82,15 +82,14 @@ bool gainedFocus = true;
 int main() {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
   GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight,
-                                        currentBasename().c_str(), nullptr, nullptr);
+                                        CURRENT_BASENAME().c_str(), nullptr, nullptr);
   if (window == nullptr) {
     std::cerr << "failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -129,9 +128,7 @@ int main() {
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_DEBUG_OUTPUT);
-#ifndef __APPLE__
-  glDebugMessageCallback(glDebugMessageCb, 0);
-#endif
+  // // glDebugMessageCallback(glDebugMessageCb, 0); // not available on macos
 
   cube.init();
   cube.reload();
