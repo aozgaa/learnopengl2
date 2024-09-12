@@ -169,7 +169,9 @@ int main() {
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_DEBUG_OUTPUT);
+#ifndef __APPLE__
   glDebugMessageCallback(glDebugMessageCb, 0);
+#endif
 
   cube.init();
   cube.reload();
